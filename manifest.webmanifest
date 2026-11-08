@@ -1,0 +1,23 @@
+{
+  "name": "Казахский для жизни",
+  "short_name": "Казахский",
+  "description": "Самоучитель бытового казахского A1–A2: уроки-ситуации, 1000 слов с озвучкой, карточки для повторения. Проект Университета кочевников.",
+  "lang": "ru",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EEF3F2",
+  "theme_color": "#00788C",
+  "categories": ["education"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Карточки", "short_name": "Карточки", "url": "./#cards", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Справочник", "short_name": "Справочник", "url": "./#guide", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
