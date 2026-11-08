@@ -1,0 +1,2251 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#00788C">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Казахский">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+#pwaBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;background:#152A2E;color:#fff;border-radius:16px;padding:10px 12px 10px 16px;font:14px "Golos Text",system-ui,sans-serif;box-shadow:0 10px 30px -10px rgba(0,0,0,.45);width:max-content;max-width:calc(100% - 24px)}
+#pwaBar b{font-weight:600}
+#pwaBar button{font:inherit;font-weight:600;border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
+#pwaBar .go{background:#3BC3D6;color:#082024}
+#pwaBar .x{background:transparent;color:#C9DADB;padding:8px}
+</style>
+<style>
+.instBtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line,#D3DFDD);background:var(--surface,#fff);color:var(--ink,#152A2E);border-radius:999px;padding:7px 14px;font:600 14px "Golos Text",system-ui,sans-serif;cursor:pointer}
+.instBtn:hover{border-color:var(--accent,#00788C)}
+.instBtn svg{flex:none}
+.top .instBtn{padding:6px 12px;font-size:13px}
+@media (max-width:600px){.top .instBtn{order:4;margin-left:auto;padding:6px;width:34px;height:34px;justify-content:center}.top .instBtn span{display:none}.top #acct{order:5;margin-left:0}}
+@media (max-width:350px){.top .instBtn{display:none}.top #acct{margin-left:auto}}
+#instFoot{margin:0 0 12px}
+#instDlg{position:fixed;inset:0;z-index:40;background:rgba(10,20,22,.55);display:grid;place-items:center;padding:16px}
+#instDlg .box{background:var(--surface,#fff);color:var(--ink,#152A2E);border-radius:20px;max-width:440px;width:100%;padding:22px;font:15px/1.5 "Golos Text",system-ui,sans-serif;box-shadow:0 20px 50px -20px rgba(0,0,0,.5)}
+#instDlg h3{margin:0 0 10px;font:600 19px "Unbounded","Golos Text",system-ui,sans-serif}
+#instDlg ol{margin:8px 0 14px;padding-left:20px}
+#instDlg li{margin:6px 0}
+#instDlg .row2{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+#instDlg button,#instDlg a.b{font:600 14px system-ui,sans-serif;border:0;border-radius:999px;padding:9px 16px;cursor:pointer;background:#00788C;color:#fff;text-decoration:none}
+#instDlg .ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 1.5px var(--line,#D3DFDD)}
+</style>
+<script>
+(function(){
+  var AUDIO=[];for(var i=0;i<=21;i++)AUDIO.push('audio/l'+i+'.json');
+  function flag(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){}}
+  var standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+  var framed=false;try{framed=window.top!==window.self}catch(e){framed=true}
+  var ua=navigator.userAgent, isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var isAndroid=/android/i.test(ua), isSamsung=/SamsungBrowser/i.test(ua), isYa=/YaBrowser/i.test(ua), isFirefox=/firefox|fxios/i.test(ua), isSafari=/^((?!chrome|android|crios|fxios).)*safari/i.test(ua);
+  var deferred=null;
+  function bar(html,onGo,key){if(document.getElementById('pwaBar'))return;var d=document.createElement('div');d.id='pwaBar';d.setAttribute('role','dialog');d.innerHTML=html+'<button class="x" aria-label="Закрыть">✕</button>';document.body.appendChild(d);
+    var go=d.querySelector('.go');if(go)go.onclick=function(){onGo(d)};d.querySelector('.x').onclick=function(){d.remove();if(key)flag(key,'1')}}
+  function dlg(title,body,extra){var old=document.getElementById('instDlg');if(old)old.remove();var d=document.createElement('div');d.id='instDlg';
+    d.innerHTML='<div class="box" role="dialog" aria-modal="true" aria-label="'+title+'"><h3>'+title+'</h3>'+body+'<div class="row2">'+(extra||'')+'<button class="ghost" data-close>Понятно</button></div></div>';
+    d.onclick=function(e){if(e.target===d||e.target.hasAttribute('data-close'))d.remove()};document.body.appendChild(d)}
+  function steps(){
+    if(framed)return dlg('Откройте курс отдельно','<p>Сейчас курс показан внутри другой страницы, а так браузеры не разрешают устанавливать приложение. Откройте его в отдельной вкладке — там появится установка.</p>','<a class="b" href="'+location.href.split('#')[0]+'" target="_blank" rel="noopener">Открыть отдельно</a>');
+    if(location.protocol!=='https:'&&location.hostname!=='localhost')return dlg('Нужен https','<p>Приложение устанавливается только с защищённого адреса (https://). Попросите администратора сайта включить SSL для этого адреса.</p>');
+    if(isIOS)return dlg('Установка на iPhone и iPad','<ol><li>Откройте курс в <b>Safari</b> (в Chrome на iPhone тоже работает, через меню).</li><li>Нажмите <b>Поделиться</b> — квадрат со стрелкой вверх внизу экрана.</li><li>Пролистайте и выберите <b>«На экран „Домой“»</b>.</li><li>Нажмите <b>Добавить</b>.</li></ol>');
+    if(isAndroid&&isSamsung)return dlg('Установка в Samsung Internet','<ol><li>Нажмите меню <b>☰</b> внизу справа.</li><li>Выберите <b>«Добавить страницу на» → «Главный экран»</b>.</li></ol>');
+    if(isAndroid&&isYa)return dlg('Установка в Яндекс Браузере','<ol><li>Нажмите меню <b>⋮</b>.</li><li>Выберите <b>«Добавить ярлык»</b> или <b>«Установить приложение»</b>.</li></ol><p>Надёжнее всего установка работает в Chrome.</p>');
+    if(isAndroid&&isFirefox)return dlg('Установка в Firefox','<ol><li>Нажмите меню <b>⋮</b>.</li><li>Выберите <b>«Установить»</b> или <b>«Добавить на главный экран»</b>.</li></ol>');
+    if(isAndroid)return dlg('Установка на Android','<ol><li>Нажмите меню Chrome <b>⋮</b> вверху справа.</li><li>Выберите <b>«Установить приложение»</b> или <b>«Добавить на главный экран» → «Установить»</b>.</li></ol><p>Если пункта нет — обновите страницу, нажмите на неё пару раз и подождите полминуты: Chrome предлагает установку после того, как вы немного побудете на сайте.</p>');
+    if(isFirefox||isSafari)return dlg('Установка на компьютер','<p>Этот браузер не устанавливает веб-приложения. Откройте курс в <b>Chrome</b> или <b>Edge</b> — справа в адресной строке появится значок установки ⊕. В Safari на Mac: <b>Файл → Добавить в Dock</b>.</p>');
+    return dlg('Установка на компьютер','<ol><li>Найдите справа в адресной строке значок <b>установки</b> (монитор со стрелкой или ⊕).</li><li>Нажмите <b>Установить</b>.</li></ol><p>Или меню <b>⋮ → «Сохранить и поделиться» → «Установить страницу как приложение»</b>.</p>')}
+  function install(){if(deferred){var e=deferred;deferred=null;e.prompt();e.userChoice&&e.userChoice.then(function(r){if(r&&r.outcome==='accepted'){hide()}})}else steps()}
+  var ICON='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M5 21h14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function hide(){document.querySelectorAll('.instBtn').forEach(function(b){b.remove()})}
+  addEventListener('DOMContentLoaded',function(){if(standalone)return;
+    var acct=document.getElementById('acct');if(acct){var b=document.createElement('button');b.className='instBtn';b.type='button';b.innerHTML=ICON+'<span>Приложение</span>';b.title='Установить приложение';b.setAttribute('aria-label','Установить приложение');b.onclick=install;acct.parentNode.insertBefore(b,acct)}
+    var f=document.querySelector('footer.wrap');if(f){var d=document.createElement('div');d.id='instFoot';d.innerHTML='<button class="instBtn" type="button">'+ICON+'Установить приложение на телефон или компьютер</button>';d.querySelector('button').onclick=install;f.insertBefore(d,f.firstChild)}});
+  addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;if(flag('kfl-install-skip'))return;
+    setTimeout(function(){if(deferred)bar('<span><b>Казахский для жизни</b> — установить как приложение</span><button class="go">Установить</button>',function(d){d.remove();install()},'kfl-install-skip')},3000)});
+  addEventListener('appinstalled',function(){hide();var b=document.getElementById('pwaBar');if(b)b.remove()});
+  if(isIOS&&!standalone&&!framed&&!flag('kfl-ios-hint'))addEventListener('load',function(){setTimeout(function(){bar('<span>Установить на iPhone: <b>Поделиться</b> → <b>На экран «Домой»</b></span>',null,'kfl-ios-hint')},5000)});
+  if('serviceWorker' in navigator&&location.protocol.indexOf('http')===0){
+    addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(){
+      if(standalone&&!flag('kfl-audio-cached')&&!flag('kfl-audio-skip'))bar('<span><b>Работать без интернета?</b> Скачать всю озвучку (≈10 МБ)</span><button class="go">Скачать</button>',function(d){
+        navigator.serviceWorker.ready.then(function(reg){var sw=reg.active;if(!sw)return;d.querySelector('span').textContent='Скачивание озвучки…';d.querySelector('.go').remove();
+          navigator.serviceWorker.addEventListener('message',function(ev){var m=ev.data||{};if(m.type!=='cache-audio-progress')return;d.querySelector('span').textContent='Скачано '+m.done+' из '+m.total;if(m.done===m.total){flag('kfl-audio-cached','1');d.querySelector('span').textContent='Готово: курс работает без интернета';setTimeout(function(){d.remove()},2500)}});
+          sw.postMessage({type:'cache-audio',urls:AUDIO})})},'kfl-audio-skip')}).catch(function(e){console.warn('SW:',e)})})}
+})();
+</script>
+<!-- Вход через Google: настройки в config.js (см. НАСТРОЙКА.md) -->
+<script src="config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head><body>
+<title>Казахский для жизни</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky header with steppe ornament band; course map of illustrated lesson cards; each lesson is a 4-step player (situation → words → grammar → practice). */
+:root{
+  --bg:#EEF3F2; --surface:#FFFFFF; --surface2:#F6F9F8; --ink:#152A2E; --muted:#5B6F72; --line:#D3DFDD;
+  --accent:#00788C; --accent-ink:#FFFFFF; --accent-soft:#D6EDF0;
+  --gold:#B97F00; --gold-soft:#FBEFCF;
+  --ok:#2D8650; --ok-soft:#DCF0E2; --bad:#BF3E37; --bad-soft:#F8E1DF;
+  --sky:#CDE8EC; --mount:#91B4BA; --snow:#FFFFFF; --ground:#D9E6C9; --wall:#EAF1EF; --road:#BFC9C8; --block:#DCE6E4;
+  --sun:#F2B705; --skin:#E9B993; --hair:#3B2A22; --hair2:#6B3F26; --grey:#9AA3A4; --wood:#B98557;
+  --c1:#00788C; --c2:#E0A21A; --c3:#C0504A; --c4:#3F7752; --grape:#7A4A9C;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E191B; --surface:#162427; --surface2:#1B2C2F; --ink:#E3EEED; --muted:#98AEB0; --line:#29393C;
+  --accent:#3BC3D6; --accent-ink:#082024; --accent-soft:#15373D;
+  --gold:#F0B93A; --gold-soft:#3A2F14;
+  --ok:#5CCB84; --ok-soft:#173527; --bad:#F2827A; --bad-soft:#3E1F1C;
+  --sky:#1D3940; --mount:#365A61; --snow:#C9DADB; --ground:#25382B; --wall:#1A2A2D; --road:#33464A; --block:#23363A;
+  --sun:#E3A800; --skin:#D6A37D; --hair:#1A110D; --hair2:#5A331E; --grey:#7D8889; --wood:#8E6443;
+  --c1:#2BA9BC; --c2:#D99A17; --c3:#D0625B; --c4:#5A9B6E; --grape:#A47BC4; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E191B; --surface:#162427; --surface2:#1B2C2F; --ink:#E3EEED; --muted:#98AEB0; --line:#29393C;
+  --accent:#3BC3D6; --accent-ink:#082024; --accent-soft:#15373D;
+  --gold:#F0B93A; --gold-soft:#3A2F14;
+  --ok:#5CCB84; --ok-soft:#173527; --bad:#F2827A; --bad-soft:#3E1F1C;
+  --sky:#1D3940; --mount:#365A61; --snow:#C9DADB; --ground:#25382B; --wall:#1A2A2D; --road:#33464A; --block:#23363A;
+  --sun:#E3A800; --skin:#D6A37D; --hair:#1A110D; --hair2:#5A331E; --grey:#7D8889; --wood:#8E6443;
+  --c1:#2BA9BC; --c2:#D99A17; --c3:#D0625B; --c4:#5A9B6E; --grape:#A47BC4; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+h1,h2,h3{text-wrap:balance;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;padding-block:10px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:18px;letter-spacing:-.01em;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:10px}
+.brand svg{flex:none}
+.uni{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--muted);font-size:12px;line-height:1.25;font-weight:600;padding-left:14px;border-left:1px solid var(--line)}
+.uni img{height:30px;width:auto;max-width:80px;object-fit:contain;filter:var(--logo-filter)}
+:root{--logo-filter:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--logo-filter:brightness(0) invert(.92)}}
+:root[data-theme="dark"]{--logo-filter:brightness(0) invert(.92)}
+.uni:hover{color:var(--accent)}
+@media (max-width:600px){
+  .top .wrap{gap:6px 10px;padding-block:8px 6px}
+  .brand{font-size:15px;gap:8px;order:0;min-width:0}
+  .brand svg{width:26px;height:26px}
+  .uni{order:1;padding-left:10px;gap:0}
+  .uni span{display:none}
+  .uni img{height:20px}
+  #acct{order:4;margin-left:auto}
+  .uni{margin-right:auto}
+  .acctBtn{padding:3px;font-size:13px}
+  .acctBtn span:not(.ava){display:none}
+  .acctBtn img,.acctBtn .ava{width:26px;height:26px}
+  .acctBtn.g{padding:7px;gap:0}
+  .top nav.tabs{order:3;width:auto;margin-left:0;gap:2px;flex-wrap:nowrap}
+  .top nav.tabs a{padding:5px 10px;font-size:13px}
+  .orn{height:9px;background-size:30px 10px}
+}
+@media (max-width:380px){.brand{font-size:13.5px;gap:6px}.brand svg{width:24px;height:24px}.uni{padding-left:8px}.uni img{height:18px}.top nav.tabs a{padding:5px 8px}}
+nav.tabs{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav.tabs a{text-decoration:none;color:var(--muted);font-weight:600;font-size:14px;padding:8px 12px;border-radius:999px;display:flex;align-items:center;gap:6px}
+nav.tabs a[aria-current="page"]{background:var(--accent-soft);color:var(--ink)}
+.badge{background:var(--gold);color:#fff;font-size:11px;border-radius:999px;padding:1px 7px;font-weight:700}
+.orn{height:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='14' viewBox='0 0 40 14'%3E%3Cpath d='M20 14V9C20 3 10 1 8 5C6.5 8 10 9.5 11.5 7M20 9C20 3 30 1 32 5C33.5 8 30 9.5 28.5 7' fill='none' stroke='%23C98A00' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:repeat-x;background-position:center;opacity:.75}
+main{padding-block:24px 64px}
+.sync{font-size:12px;color:var(--muted)}
+.sec{font-family:var(--f-display);font-size:20px;font-weight:500;margin:32px 0 14px}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:11px 20px;font-weight:600;cursor:pointer;text-decoration:none;background:var(--accent);color:var(--accent-ink);font-size:15px}
+.btn:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.ghost:hover{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.btn.small{padding:7px 14px;font-size:13px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* hero / status */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;background:var(--surface);border-radius:20px;padding:28px;border:1px solid var(--line)}
+.hero h1{font-family:var(--f-display);font-size:clamp(26px,4.4vw,40px);font-weight:700;line-height:1.12;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{max-width:60ch;margin:12px 0 18px}
+.hero .scn{border-radius:14px}
+.hero>*{min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:4px}
+.stat{background:var(--surface2);border-radius:12px;padding:12px 14px}
+.stat b{display:block;font-family:var(--f-display);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.lvl{display:inline-block;font-family:var(--f-display);background:var(--gold-soft);color:var(--ink);border-radius:8px;padding:2px 10px;font-weight:700}
+/* lesson grid */
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.lcard{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;transition:transform .15s,border-color .15s}
+.lcard:hover{transform:translateY(-2px);border-color:var(--accent)}
+.lthumb{aspect-ratio:16/9;max-width:100%;background:var(--sky)}
+.lthumb svg{display:block;width:100%;height:100%}
+.lmeta{padding:12px 14px 14px;display:flex;flex-direction:column;gap:2px;flex:1}
+.lnum{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lmeta h3{font-family:var(--f-display);font-size:17px;font-weight:500}
+.lru{margin:0;color:var(--muted);font-size:14px}
+.lstats{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:10px}
+.lstats span{font-size:12px;border-radius:999px;padding:2px 9px;background:var(--surface2);font-weight:600}
+.lstats .known{background:var(--gold-soft)}
+.lstats .okpill{background:var(--ok-soft);color:var(--ok)}
+/* lesson */
+.lhead{display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px}
+.lhead h1{font-family:var(--f-display);font-size:clamp(24px,4vw,34px);font-weight:700;letter-spacing:-.02em}
+.lhead .lru{font-size:16px}
+.back{font-size:14px;text-decoration:none;font-weight:600;display:inline-block;margin-bottom:10px}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--line)}
+.steps button{border:0;background:none;padding:10px 14px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;display:flex;gap:8px;align-items:center}
+.steps button i{font-style:normal;font-family:var(--f-display);font-size:12px;width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;background:var(--surface2)}
+.steps button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.steps button[aria-selected="true"] i{background:var(--accent);color:var(--accent-ink)}
+.sitgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:24px;align-items:start}
+.scn{display:block;width:100%;height:auto;border-radius:var(--r)}
+.scn text{font-family:var(--f-body)}
+.note{background:var(--gold-soft);border-radius:12px;padding:12px 16px;font-size:15px}
+.note b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.dlg{display:flex;flex-direction:column;gap:8px}
+.line{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.line.me{background:var(--accent-soft);border-color:transparent}
+.who{font-size:12px;font-weight:700;color:var(--muted);padding-top:3px;overflow-wrap:anywhere}
+.kk{font-weight:600;font-size:17px}
+.tr{color:var(--muted);font-size:14px;margin-top:2px}
+.hide-tr .tr{display:none}
+.say{display:inline-grid;border:0;background:var(--surface2);border-radius:50%;width:34px;height:34px;cursor:pointer;place-items:center;flex:none;color:var(--accent)}
+.say.big{width:72px;height:72px;background:var(--accent);color:var(--accent-ink)}
+.say.big svg{width:30px;height:30px}
+.say.on{background:var(--accent);color:var(--accent-ink)}
+.line.playing{outline:2px solid var(--accent)}
+.addc{border:0;background:var(--surface2);color:var(--accent);font-weight:600;font-size:12px;border-radius:999px;padding:4px 10px;cursor:pointer;white-space:nowrap}
+.addc.in{background:var(--ok-soft);color:var(--ok)}
+.acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.cardsHome{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:24px;margin-top:20px}
+.cardsHome h2{font-family:var(--f-display);font-size:22px;font-weight:500}
+.deckStack{position:relative;height:150px;max-width:300px;margin-top:14px}
+.deckStack div{position:absolute;inset:0;border-radius:16px;background:var(--surface2);border:1px solid var(--line);display:grid;place-items:center;font-size:22px;font-weight:700}
+.deckStack div:nth-child(1){transform:rotate(-6deg) translate(-8px,6px)}
+.deckStack div:nth-child(2){transform:rotate(4deg) translate(8px,2px)}
+.deckStack div:nth-child(3){background:var(--accent-soft)}
+.addform{display:grid;gap:10px}
+.addform label{font-size:13px;font-weight:600;color:var(--muted)}
+.addform input{width:100%;font:inherit;font-size:17px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);color:var(--ink)}
+.addform input:focus{border-color:var(--accent);outline:none}
+.seg{display:inline-flex;background:var(--surface2);border-radius:999px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.arena{display:grid;grid-template-columns:80px minmax(0,460px) 80px;gap:12px;justify-content:center;align-items:center;margin:8px 0 18px}
+.pile{text-align:center;font-size:13px;color:var(--muted);font-weight:600}
+.pile b{display:block;font-family:var(--f-display);font-size:26px;font-variant-numeric:tabular-nums}
+.pile.no b{color:var(--bad)}.pile.yes b{color:var(--ok)}
+.dcard{position:relative;min-height:300px;background:var(--surface);border:2px solid var(--line);border-radius:24px;padding:28px 22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .22s ease,border-color .15s,opacity .22s;box-shadow:0 10px 30px -18px rgba(0,0,0,.35)}
+.dcard[data-dir="r"]{border-color:var(--ok)}.dcard[data-dir="l"]{border-color:var(--bad)}
+.dcard .stamp{position:absolute;top:16px;font-weight:800;font-size:14px;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:8px;opacity:0}
+.dcard .stamp.y{right:16px;color:var(--ok);border:2px solid var(--ok)}.dcard .stamp.n{left:16px;color:var(--bad);border:2px solid var(--bad)}
+.dcard[data-dir="r"] .stamp.y,.dcard[data-dir="l"] .stamp.n{opacity:1}
+.dcard .front{font-size:30px;font-weight:700;overflow-wrap:anywhere;line-height:1.25}
+.dcard .back{font-size:20px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px;width:100%}
+.dcard .hint{font-size:13px;color:var(--muted)}
+.dcard .kind{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.dcard .pic{width:72px;height:72px;font-size:42px}
+.swbtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.swbtns .btn{min-width:150px}
+.btn.no{background:var(--bad-soft);color:var(--bad)}.btn.yes{background:var(--ok);color:#fff}
+.mylist{display:grid;gap:6px;margin-top:10px}
+.mylist div{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.mylist span{min-width:0;overflow-wrap:anywhere}
+.mylist button{border:0;background:none;color:var(--muted);cursor:pointer;font-size:13px;flex:none}
+@media (max-width:760px){.cardsHome{grid-template-columns:1fr}.arena{grid-template-columns:minmax(0,1fr)}.arena .pile{display:none}}
+.acctBtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 5px 5px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;color:var(--ink)}
+.acctBtn img,.acctBtn .ava{width:28px;height:28px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-size:13px}
+.acctBtn.g{padding:7px 14px}
+.prof{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.prof img,.prof .ava{width:64px;height:64px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-size:26px;font-weight:700}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
+.setgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.setgrid label{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.setgrid input,.setgrid select{font:inherit;font-size:16px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);color:var(--ink)}
+.gbtn{display:inline-flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:10px 18px;font-weight:600;cursor:pointer;font-size:15px}
+.gbtn:hover{border-color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:20;max-width:calc(100% - 32px)}
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--gold-soft);border-radius:14px;padding:14px 18px;margin-top:16px}
+.banner p{margin:0;flex:1;min-width:200px}
+.say:hover{background:var(--accent-soft)}
+.phr{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.phr div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.phr .kk{font-size:15px}
+/* words */
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.wcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.wcard .top2{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+.pic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:26px;background:var(--surface2);flex:none}
+.pic.sw{border:1px solid var(--line)}
+.pic-txt{font-family:var(--f-display);font-size:18px;color:var(--accent)}
+.wcard .kk{font-size:18px;overflow-wrap:anywhere}
+.wcard .ru{color:var(--muted);font-size:14px}
+.tog{margin-top:auto;align-self:flex-start;border:0;background:none;color:var(--accent);font-weight:600;font-size:13px;cursor:pointer;padding:2px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--gold-soft);border-radius:999px;padding:5px 6px 5px 12px;font-size:14px}
+.chip button{border:0;background:var(--surface);border-radius:999px;font-size:12px;padding:2px 8px;cursor:pointer;color:var(--muted)}
+/* grammar */
+.gram{max-width:760px}
+.gram h3{font-family:var(--f-display);font-size:18px;font-weight:500;margin:26px 0 8px}
+.gram h3:first-child{margin-top:0}
+.gram p{margin:8px 0}
+.tbl{overflow-x:auto;margin:10px 0}
+.tbl table{border-collapse:collapse;min-width:100%;background:var(--surface);border-radius:10px;overflow:hidden;font-size:15px}
+.tbl th,.tbl td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{background:var(--surface2);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.sfx{color:var(--accent);font-weight:700}
+.ex{background:var(--surface);border-left:3px solid var(--accent);padding:8px 14px;border-radius:0 10px 10px 0;margin:8px 0}
+.ex b{color:var(--ink)}
+.use{background:var(--ok-soft);border-radius:12px;padding:12px 16px;margin-top:18px}
+.sitgrid .use{margin-top:0}
+.use b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+/* quiz */
+.quiz{max-width:680px}
+.qhead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.bar{flex:1;height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar span{display:block;height:100%;background:var(--accent);transition:width .3s}
+.qcount{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px}
+.qlabel{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:8px}
+.qtext{font-size:18px;margin-bottom:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.qtext .big{font-size:28px;font-weight:700}
+.qtext .sub{flex-basis:100%;font-size:14px;color:var(--muted)}
+.blank{display:inline-block;min-width:54px;border-bottom:2px solid var(--accent);text-align:center;color:var(--accent)}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;border:1.5px solid var(--line);background:var(--surface2);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:16px;font-weight:500}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.idk{margin-top:10px;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:14px}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;font-size:15px}
+.fb.ok{background:var(--ok-soft)}
+.fb.no{background:var(--bad-soft)}
+.qact{margin-top:16px;display:flex;justify-content:flex-end;gap:10px}
+.tin{width:100%;font:inherit;font-size:20px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface2);color:var(--ink)}
+.kb{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.kb button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface2);font-size:18px;font-weight:600;cursor:pointer}
+.kb button:hover{border-color:var(--accent)}
+.pool,.ansl{display:flex;flex-wrap:wrap;gap:8px;min-height:52px;padding:8px;border-radius:12px}
+.ansl{border:1.5px dashed var(--line);margin-bottom:10px}
+.tok{border:1.5px solid var(--line);background:var(--surface2);border-radius:10px;padding:8px 12px;font-size:16px;font-weight:600;cursor:pointer}
+.ansl .tok{background:var(--accent-soft);border-color:transparent}
+.res{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+.res h2{font-family:var(--f-display);font-size:24px;font-weight:500}
+.score{font-family:var(--f-display);font-size:52px;font-weight:700;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.mist{margin:14px 0;padding:0;list-style:none;display:grid;gap:6px}
+.mist li{background:var(--bad-soft);border-radius:10px;padding:8px 12px;font-size:15px}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.lrow .bar{height:8px}
+.lrow span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+/* review */
+.flash{max-width:520px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:32px 24px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.flash .front{font-size:30px;font-weight:700;overflow-wrap:anywhere}
+.flash .back{font-size:20px;color:var(--muted)}
+.flash .kind{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:700}
+.flash .pic{width:72px;height:72px;font-size:42px}
+/* guide */
+.letters{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.letter{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:flex-start}
+.letter b{font-family:var(--f-display);font-size:28px;color:var(--accent);line-height:1;min-width:48px}
+.letter div{font-size:14px;min-width:0}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cols2>*{min-width:0}
+@media (max-width:760px){
+  .hero,.sitgrid,.cols2{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .line{grid-template-columns:minmax(0,1fr) auto}
+  .who{grid-column:1/-1;padding-top:0}
+  .lrow{grid-template-columns:minmax(0,1fr) 80px 40px}
+  nav.tabs{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://unomad.uno/kazforlife" target="_top" title="Казахский для жизни — на главную"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14" fill="var(--accent)"/><path d="M15 25V17C15 10 8 8 6.5 12C5.5 15 9 16 10.5 14M15 17C15 10 22 8 23.5 12C24.5 15 21 16 19.5 14" fill="none" stroke="var(--sun)" stroke-width="2" stroke-linecap="round"/></svg>Казахский для жизни</a>
+    <a class="uni" href="https://unomad.uno" target="_top" title="Университет кочевников"><img src="unomad-logo.png" alt="Университет кочевников" onerror="this.hidden=true"><span>проект <br>Университета кочевников</span></a>
+    <nav class="tabs" aria-label="Разделы">
+      <a href="#course" data-nav="course">Курс</a>
+      <a href="#cards" data-nav="cards">Карточки <span class="badge" id="dueBadge" hidden></span></a>
+      <a href="#guide" data-nav="guide">Справочник</a>
+    </nav>
+    <div id="acct"></div>
+  </div>
+  <div class="orn" aria-hidden="true"></div>
+</header>
+<main class="wrap" id="app"></main>
+<footer class="wrap" style="padding-block:0 32px"><span class="sync" id="sync">Прогресс сохраняется в этом браузере.</span></footer>
+
+<script>
+/* ===================== CONTENT ===================== */
+const L = [
+{id:1,lvl:'A1',kk:'Танысу',ru:'Знакомство',
+sit:'Анна недавно переехала в Алматы и пришла работать в коворкинг. Её сосед по столу — Ерлан.',
+dlg:[['Ерлан','Сәлеметсіз бе!','Здравствуйте!'],['Анна','Сәлеметсіз бе!','Здравствуйте!'],['Ерлан','Менің атым Ерлан. Сіздің атыңыз кім?','Меня зовут Ерлан. Как вас зовут?'],['Анна','Менің атым Анна.','Меня зовут Анна.'],['Ерлан','Танысқаныма қуаныштымын!','Рад познакомиться!'],['Анна','Мен де қуаныштымын.','Я тоже рада.'],['Ерлан','Қалыңыз қалай?','Как ваши дела?'],['Анна','Жақсы, рахмет. Өзіңіз қалайсыз?','Хорошо, спасибо. А вы как?'],['Ерлан','Жаман емес. Сіз студентсіз бе?','Неплохо. Вы студентка?'],['Анна','Жоқ, мен студент емеспін. Мен дизайнермін.','Нет, я не студентка. Я дизайнер.'],['Ерлан','Өте жақсы! Көріскенше!','Отлично! До встречи!'],['Анна','Сау болыңыз!','До свидания!']],
+ph:[['Менің атым …','Меня зовут …'],['Танысқаныма қуаныштымын.','Рад(а) познакомиться.'],['Қалың қалай?','Как дела? (на «ты»)'],['Кешіріңіз, түсінбедім.','Извините, не понял(а).']],
+use:'Первая встреча с коллегой, соседом, на курсах, в гостях. Сіз — с незнакомыми и старшими, сен — с друзьями, детьми, ровесниками, если перешли на «ты».',
+words:`сәлем|привет|👋|t
+сәлеметсіз бе|здравствуйте
+сау болыңыз|до свидания||t
+көріскенше|до встречи
+рахмет|спасибо|🙏
+оқасы жоқ|не за что
+иә|да
+жоқ|нет
+кешіріңіз|извините||t
+ат|имя
+жақсы|хорошо|👍
+жаман|плохо|👎
+өте|очень
+де|тоже
+мен|я
+сен|ты
+сіз|вы (вежливо)
+ол|он, она
+біз|мы
+олар|они
+қош келдіңіз|добро пожаловать
+қайырлы таң|доброе утро|🌅
+қайырлы күн|добрый день
+қайырлы кеш|добрый вечер
+қайырлы түн|спокойной ночи
+сау бол|пока (на «ты»)
+кездескенше|до встречи
+қуанышты|радостный, рад
+таныстыру|знакомить, представлять
+танысу|знакомиться
+есім|имя (официально)
+тегі|фамилия
+жігіт|парень, молодой человек
+ер адам|мужчина
+кім|кто
+не|что
+қалай|как
+өзіңіз|вы сами
+ал|а (союз)
+мырза|господин
+ханым|госпожа
+құрметті|уважаемый
+кешірім сұраймын|прошу прощения
+ештеңе етпейді|ничего страшного`,
+gram:`<h3>«Я — дизайнер»: личные окончания</h3>
+<p>В казахском нет глагола «быть» в настоящем времени. Вместо него к слову прибавляется окончание лица.</p>
+<div class="tbl"><table><tr><th>Кто</th><th>Окончание</th><th>Пример</th></tr>
+<tr><td>мен — я</td><td class="sfx">-мын/-мін, -бын/-бін, -пын/-пін</td><td>Мен дизайнер<span class="sfx">мін</span>. Мен студент<span class="sfx">пін</span>.</td></tr>
+<tr><td>сен — ты</td><td class="sfx">-сың/-сің</td><td>Сен студент<span class="sfx">сің</span>.</td></tr>
+<tr><td>сіз — вы</td><td class="sfx">-сыз/-сіз</td><td>Сіз дәрігер<span class="sfx">сіз</span>.</td></tr>
+<tr><td>ол — он, она</td><td>—</td><td>Ол дәрігер.</td></tr>
+<tr><td>біз — мы</td><td class="sfx">-мыз/-міз, -быз/-біз, -пыз/-піз</td><td>Біз қазақ<span class="sfx">пыз</span>.</td></tr>
+<tr><td>олар — они</td><td>—</td><td>Олар студент(тер).</td></tr></table></div>
+<h3>Сингармонизм: твёрдо или мягко</h3>
+<p>Смотрите на <b>последний гласный</b> слова. Твёрдые гласные <b>а, о, ұ, ы</b> → суффикс с <b>ы/а</b>. Мягкие <b>ә, е, ө, ү, і</b> → суффикс с <b>і/е</b>: қазақ<span class="sfx">пын</span>, но дәрігер<span class="sfx">мін</span>.</p>
+<p>Первая согласная суффикса зависит от конца слова: после гласных и р, л, й, у, м, н, ң → <b>м</b>; после з, ж → <b>б</b>; после глухих (к, қ, п, с, т, ш) → <b>п</b>. Эта логика повторится почти во всех суффиксах.</p>
+<h3>Вопрос: частица ма/ме</h3>
+<p>Вопрос «да/нет» делается частицей <b>ма/ме, ба/бе, па/пе</b> (по тем же правилам):</p>
+<div class="ex">Сіз студентсіз <b>бе</b>? — Вы студент? · Бұл кітап <b>па</b>? — Это книга? · Сен Аннасың <b>ба</b>? — Ты Анна?</div>
+<h3>Отрицание: емес</h3>
+<div class="ex">Мен студент <b>емеспін</b>. — Я не студент. · Ол дәрігер <b>емес</b>. — Он не врач.</div>
+<p>Слово <b>жоқ</b> — «нет» как ответ и «нет, отсутствует». <b>Емес</b> — «не является».</p>`,
+gx:[['Мен студент___. (Я студент.)',['пін','мін','сің'],'Студент кончается на глухой «т», последний гласный «е» — мягкий: -пін.'],
+['Сіз дәрігер___ бе? (Вы врач?)',['сіз','сыз','мін'],'Дәрігер — мягкое слово, лицо «вы»: -сіз.'],
+['Біз қазақ___. (Мы казахи.)',['пыз','міз','сыз'],'После глухого «қ» и твёрдого «а»: -пыз.'],
+['Бұл кітап ___? (Это книга?)',['па','ма','ба'],'После глухого «п» вопросительная частица — па.'],
+['Мен дәрігер ___. (Я не врач.)',['емеспін','жоқпын','емес'],'«Не являюсь» — емес + окончание лица: емеспін.'],
+['Ол мұғалім. — Как сказать «вы» вежливо?',['сіз','сен','ол'],'Сіз — вежливое «вы», сен — «ты».']]},
+
+{id:2,lvl:'A1',kk:'Қайдансыз?',ru:'Откуда вы? Языки',
+sit:'Ерлан и Анна разговорились за кофе. Ерлан спрашивает, откуда Анна и на каких языках она говорит.',
+dlg:[['Ерлан','Сіз қайдансыз?','Откуда вы?'],['Анна','Мен Ресейденмін. Мәскеуденмін.','Я из России. Из Москвы.'],['Ерлан','Қазір қайда тұрасыз?','А сейчас где живёте?'],['Анна','Қазір Алматыда тұрамын.','Сейчас живу в Алматы.'],['Ерлан','Қазақша сөйлейсіз бе?','Вы говорите по-казахски?'],['Анна','Аздап сөйлеймін. Қазақ тілін үйреніп жүрмін.','Немного говорю. Я учу казахский язык.'],['Ерлан','Жарайсыз! Ағылшынша да сөйлейсіз бе?','Молодец! А по-английски тоже говорите?'],['Анна','Иә. Ал сіз?','Да. А вы?'],['Ерлан','Мен қазақша, орысша және ағылшынша сөйлеймін. Біздің кеңседе үш тілде сөйлейміз.','Я говорю по-казахски, по-русски и по-английски. В нашем офисе говорим на трёх языках.'],['Анна','Кешіріңіз, түсінбедім. Баяу сөйлеңізші.','Извините, я не поняла. Говорите, пожалуйста, медленнее.'],['Ерлан','Әрине! Біз… үш… тілде… сөйлейміз.','Конечно! Мы… говорим… на трёх… языках.']],
+ph:[['Қайталаңызшы.','Повторите, пожалуйста.'],['Баяу сөйлеңізші.','Говорите медленнее, пожалуйста.'],['Қазақша қалай болады?','Как это по-казахски?'],['Мен қазақ тілін үйреніп жүрмін.','Я учу казахский язык.']],
+use:'Small talk с новыми знакомыми, таксистами, соседями. Фразы «Баяу сөйлеңізші» и «Қайталаңызшы» спасают любой разговор.',
+words:`қайдан|откуда||t
+қайда|где; куда
+ел|страна|🌍
+қала|город|🏙️|t
+Ресей|Россия
+тұру|жить
+тіл|язык|👅
+қазақша|по-казахски
+орысша|по-русски
+ағылшынша|по-английски
+сөйлеу|говорить|🗣️|t
+түсіну|понимать
+аздап|немного
+баяу|медленно|🐢
+қазір|сейчас
+үйрену|учить, изучать|📚
+әрине|конечно
+және|и
+Қытай|Китай
+Түркия|Турция
+Өзбекстан|Узбекистан
+Қырғызстан|Кыргызстан
+Америка|Америка
+Германия|Германия
+ұлт|национальность
+қазақ|казах
+орыс|русский (человек)
+неміс|немец; немецкий
+ауыл|село, аул|🏘️
+шетел|заграница
+шетелдік|иностранец
+туған жер|родина
+туу|родиться
+өсу|расти
+сөз|слово
+сөйлем|предложение
+аударма|перевод
+сөздік|словарь
+білу|знать
+ұмыту|забывать
+есте сақтау|запоминать
+жазу|писать|✍️
+дұрыс|правильно|✅
+қате|ошибка; неправильно|❌
+айту|сказать
+сұрау|спрашивать
+түсіндіру|объяснять
+көмектесу|помогать
+қайталау|повторять
+мағына|значение`,
+gram:`<h3>Где? — местный падеж (жатыс септік)</h3>
+<p>«В/на» = окончание <b>-да/-де</b>, после глухих — <b>-та/-те</b>.</p>
+<div class="ex">Алматы<b>да</b> — в Алматы · Мәскеу<b>де</b> — в Москве · мектеп<b>те</b> — в школе · кеңсе<b>де</b> — в офисе</div>
+<h3>Откуда? — исходный падеж (шығыс септік)</h3>
+<p>«Из/от» = <b>-дан/-ден</b>; после глухих <b>-тан/-тен</b>; после м, н, ң <b>-нан/-нен</b>.</p>
+<div class="ex">Ресей<b>ден</b> — из России · Алматы<b>дан</b> — из Алматы · мектеп<b>тен</b> — из школы · Қазақстан<b>нан</b> — из Казахстана</div>
+<p>«Я из России» — одно слово с окончанием лица: <b>Мен Ресейденмін.</b></p>
+<h3>Настоящее время глагола</h3>
+<p>Основа + <b>-а/-е</b> (после согласной) или <b>-й</b> (после гласной) + окончание лица.</p>
+<div class="tbl"><table><tr><th></th><th>тұр — жить</th><th>сөйле — говорить</th></tr>
+<tr><td>мен</td><td>тұр<span class="sfx">амын</span></td><td>сөйле<span class="sfx">ймін</span></td></tr>
+<tr><td>сен</td><td>тұр<span class="sfx">асың</span></td><td>сөйле<span class="sfx">йсің</span></td></tr>
+<tr><td>сіз</td><td>тұр<span class="sfx">асыз</span></td><td>сөйле<span class="sfx">йсіз</span></td></tr>
+<tr><td>ол</td><td>тұр<span class="sfx">ады</span></td><td>сөйле<span class="sfx">йді</span></td></tr>
+<tr><td>біз</td><td>тұр<span class="sfx">амыз</span></td><td>сөйле<span class="sfx">йміз</span></td></tr></table></div>
+<h3>Отрицание глагола</h3>
+<p>Между основой и окончанием вставьте <b>-ма/-ме</b> (после м, н, ң, з, ж — <b>-ба/-бе</b>, после глухих — <b>-па/-пе</b>):</p>
+<div class="ex">тұр<b>ма</b>ймын — не живу · сөйле<b>ме</b>ймін — не говорю · түсін<b>бе</b>ймін — не понимаю</div>
+<p>Словарная форма глагола оканчивается на <b>-у</b> (тұру, сөйлеу). Основа — без -у: тұр-, сөйле-, түсін-.</p>`,
+gx:[['Мен Алматы___ тұрамын. (Я живу в Алматы.)',['да','дан','ға'],'«Где?» — местный падеж -да.'],
+['Мен Мәскеу___мін. (Я из Москвы.)',['ден','де','ге'],'«Откуда?» — исходный падеж; Мәскеу мягкое → -ден.'],
+['Мен мектеп___ жұмыс істеймін. (Работаю в школе.)',['те','де','тен'],'После глухого «п» -де превращается в -те.'],
+['Сіз орысша сөйлей___ бе? (Вы говорите по-русски?)',['сіз','мін','ді'],'Лицо «вы»: -сіз.'],
+['Мен түсін___мін. (Я не понимаю.)',['бей','ей','пей'],'После «н» отрицание -бе + й: түсінбеймін.'],
+['Ол қазақша сөйлей___. (Он говорит по-казахски.)',['ді','мін','сің'],'3-е лицо настоящего времени: -ді / -ды.']]},
+
+{id:3,lvl:'A1',kk:'Сандар',ru:'Числа, возраст, телефон',
+sit:'Анна знакомится с Айгерім на курсах йоги. Они на «ты» и обмениваются номерами.',
+dlg:[['Айгерім','Анна, сен неше жастасың?','Анна, сколько тебе лет?'],['Анна','Отыз екі жастамын. Ал сен ше?','Тридцать два. А тебе?'],['Айгерім','Мен жиырма жеті жастамын.','Мне двадцать семь.'],['Анна','Біздің топта неше адам бар?','Сколько человек в нашей группе?'],['Айгерім','Он бес адам бар.','Пятнадцать человек.'],['Айгерім','Телефон нөміріңді айтшы.','Скажи свой номер телефона.'],['Анна','Жазып ал: сегіз, жеті жүз бір, екі жүз отыз төрт, елу алты, жетпіс сегіз.','Записывай: 8 701 234 56 78.'],['Айгерім','Қайталашы, өтінемін. Елу алты ма?','Повтори, пожалуйста. Пятьдесят шесть?'],['Анна','Иә, елу алты, жетпіс сегіз.','Да, пятьдесят шесть, семьдесят восемь.'],['Айгерім','Рахмет! Кешке хабарласамын.','Спасибо! Вечером напишу.']],
+ph:[['Неше жастасыз?','Сколько вам лет?'],['Нөміріңізді айтыңызшы.','Скажите ваш номер, пожалуйста.'],['Ал сен ше?','А ты?']],
+use:'Номера телефонов, возраст, номер квартиры, количество — нужно везде: от регистрации до такси.',
+words:`бір|один|1|t
+екі|два|2
+үш|три|3
+төрт|четыре|4|t
+бес|пять|5
+алты|шесть|6
+жеті|семь|7
+сегіз|восемь|8
+тоғыз|девять|9|t
+он|десять|10
+жиырма|двадцать|20
+отыз|тридцать|30
+қырық|сорок|40
+елу|пятьдесят|50
+алпыс|шестьдесят|60
+жетпіс|семьдесят|70
+сексен|восемьдесят|80
+тоқсан|девяносто|90
+жүз|сто|100
+мың|тысяча|1000
+жас|возраст; лет
+неше|сколько
+адам|человек|🧍
+өтінемін|прошу, пожалуйста
+нөл|ноль|0
+он бір|одиннадцать|11
+он бес|пятнадцать|15
+екі жүз|двести|200
+бес жүз|пятьсот|500
+екі мың|две тысячи|2000
+жүз мың|сто тысяч
+миллион|миллион
+бірінші|первый|1-й
+екінші|второй|2-й
+үшінші|третий|3-й
+соңғы|последний
+сан|число; цифра
+нөмір|номер
+есептеу|считать
+көп|много
+аз|мало
+барлық|весь, все
+әр|каждый
+екеу|двое
+үшеу|трое
+жұп|пара
+бірнеше|несколько
+бәрі|все, всё
+көбірек|больше
+азырақ|меньше
+ештеңе|ничего
+ешкім|никто
+жасы үлкен|старше по возрасту
+жасы кіші|младше по возрасту`,
+gram:`<h3>Составные числа</h3>
+<p>Строятся как в русском — от большего к меньшему:</p>
+<div class="ex">жиырма бес — 25 · жүз отыз — 130 · екі жүз елу — 250 · мың тоғыз жүз сексен — 1980</div>
+<h3>После числа — единственное число</h3>
+<p>Существительное после числа <b>не</b> получает окончание множественного числа:</p>
+<div class="ex"><b>екі алма</b> — два яблока (а не «екі алмалар») · бес билет — пять билетов</div>
+<h3>Сколько лет?</h3>
+<div class="ex">Неше жас<b>та</b>сыз? — Сколько вам лет? → Отыз жас<b>та</b>мын. — Мне тридцать.</div>
+<p>Буквально «в каком вы возрасте?»: жас + местный падеж -та + окончание лица.</p>
+<h3>Неше или қанша?</h3>
+<p><b>Неше</b> — «сколько» для счёта: возраст, время, люди. <b>Қанша</b> — «сколько» для количества и денег: <b>Қанша тұрады?</b> — Сколько стоит?</p>
+<h3>Порядковые числа</h3>
+<p>+ <b>-ыншы/-інші</b> после согласной, <b>-ншы/-нші</b> после гласной:</p>
+<div class="ex">бір<b>інші</b> — первый · екі<b>нші</b> — второй · үш<b>інші</b> — третий · бес<b>інші</b> — пятый · алты<b>ншы</b> — шестой</div>
+<h3>Телефонные номера</h3>
+<p>Читают группами: 8 701 234 56 78 — <i>сегіз, жеті жүз бір, екі жүз отыз төрт, елу алты, жетпіс сегіз</i>.</p>`,
+gx:[['25 = ___',['жиырма бес','елу екі','бес жиырма'],'Сначала десятки, потом единицы.'],
+['«Сколько тебе лет?»',['Неше жастасың?','Қанша тұрады?','Сағат неше?'],'Возраст спрашивают через неше + жаста.'],
+['«два яблока»',['екі алма','екі алмалар','алма екі'],'После числа существительное — в единственном числе.'],
+['«третий»',['үшінші','үшеу','үш'],'Порядковое: үш + інші.'],
+['47 = ___',['қырық жеті','жетпіс төрт','төрт жеті'],'Қырық — 40, жеті — 7.'],
+['«Мне 30 лет.»',['Мен отыз жастамын.','Мен отызбын.','Отыз жас мен.'],'жас + та + мын.']]},
+
+{id:4,lvl:'A1',kk:'Отбасым',ru:'Моя семья',
+sit:'Айгерім в гостях у Анны. Они смотрят семейные фотографии.',
+dlg:[['Айгерім','Бұл кім?','Кто это?'],['Анна','Бұл — менің анам, ал бұл — әкем.','Это моя мама, а это — папа.'],['Айгерім','Анаң өте әдемі!','Твоя мама очень красивая!'],['Анна','Рахмет! Ол мұғалім, ал әкем дәрігер.','Спасибо! Она учительница, а папа — врач.'],['Айгерім','Бауырларың бар ма?','У тебя есть братья или сёстры?'],['Анна','Иә, бір ағам бар. Әпкем жоқ.','Да, есть старший брат. Старшей сестры нет.'],['Айгерім','Ағаң үйленген бе?','Твой брат женат?'],['Анна','Иә, оның екі баласы бар: ұлы және қызы.','Да, у него двое детей: сын и дочь.'],['Айгерім','Ал менің отбасым үлкен: екі інім және бір сіңлім бар.','А у меня большая семья: два младших брата и младшая сестра.']],
+ph:[['Үйленгенсіз бе?','Вы женаты?'],['Балаларыңыз бар ма?','У вас есть дети?'],['Бұл кім?','Кто это?']],
+use:'Разговор в гостях, в такси, с соседями. В Казахстане о семье спрашивают часто — это знак вежливого интереса.',
+words:`отбасы|семья|👨‍👩‍👧|t
+әке|отец|👨
+ана|мать|👩|t
+аға|старший брат
+іні|младший брат
+әпке|старшая сестра
+сіңлі|младшая сестра (у девушки)
+қарындас|младшая сестра (у парня)
+бауыр|брат или сестра
+ата|дедушка|👴
+әже|бабушка|👵|t
+ұл|сын|👦
+қыз|дочь; девушка|👧
+бала|ребёнок|🧒
+күйеу|муж
+әйел|жена; женщина
+бар|есть, имеется
+үйленген|женат
+бұл|это, этот
+немере|внук, внучка
+туыс|родственник
+жұбайы|супруг(а)
+ата-ана|родители
+ағайын|родня
+шөбере|правнук, правнучка
+жиен|племянник (по сестре или дочери)
+келін|невестка
+күйеу бала|зять
+қайын ата|свёкор; тесть
+қайын ене|свекровь; тёща
+нағашы|родня по матери
+егіз|близнецы|👯
+жалғыз|единственный; одинокий
+отбасылы|семейный
+үйлену|жениться
+тұрмысқа шығу|выйти замуж|💍
+ажырасу|разводиться
+кенже|младший ребёнок в семье
+тұңғыш|первенец
+балалар|дети
+ақсақал|старейшина, аксакал
+сүю|любить; целовать|💕
+құда|сват
+кәрі|старый (о человеке)
+сүйкімді|милый
+ақылды|умный
+ұзын бойлы|высокий (о человеке)
+аласа|низкий
+сұлу|красивая`,
+gram:`<h3>«Мой, твой, ваш»: притяжательные окончания</h3>
+<p>Принадлежность выражается окончанием. Местоимение (менің — мой) можно опустить: <b>анам</b> = моя мама.</p>
+<div class="tbl"><table><tr><th>Чей</th><th>после гласной</th><th>после согласной</th></tr>
+<tr><td>менің — мой</td><td>ана<span class="sfx">м</span>, әке<span class="sfx">м</span></td><td>ұл<span class="sfx">ым</span>, іні → ін<span class="sfx">ім</span></td></tr>
+<tr><td>сенің — твой</td><td>ана<span class="sfx">ң</span></td><td>ұл<span class="sfx">ың</span></td></tr>
+<tr><td>сіздің — ваш</td><td>ана<span class="sfx">ңыз</span></td><td>ұл<span class="sfx">ыңыз</span></td></tr>
+<tr><td>оның — его/её</td><td>ана<span class="sfx">сы</span></td><td>ұл<span class="sfx">ы</span></td></tr>
+<tr><td>біздің — наш</td><td>ана<span class="sfx">мыз</span></td><td>ұл<span class="sfx">ымыз</span></td></tr></table></div>
+<h3>«У меня есть»: бар / жоқ</h3>
+<div class="ex">Менің ағам <b>бар</b>. — У меня есть старший брат. · Менің әпкем <b>жоқ</b>. — Старшей сестры нет.</div>
+<div class="ex">Сенің бауырың бар <b>ма</b>? — У тебя есть брат/сестра? · Оның екі баласы бар. — У него двое детей.</div>
+<p>Предмет получает притяжательное окончание: «у меня есть машина» = <b>Менің машинам бар</b>. А «у меня (с собой) есть» — <b>Менде</b> қалам бар.</p>
+<h3>Братья и сёстры</h3>
+<p>Казахский различает возраст: <b>аға</b> и <b>әпке</b> — старшие; <b>іні</b> — младший брат; младшую сестру девушка называет <b>сіңлі</b>, а парень — <b>қарындас</b>. Обращение «аға» и «әпке» вежливо используют и к незнакомым людям постарше.</p>`,
+gx:[['«моя мама» — ана___',['м','ң','сы'],'Мой: после гласной -м.'],
+['«ваш отец» — әке___',['ңіз','м','сі'],'Ваш: после гласной -ңіз (мягко).'],
+['«его сын» — ұл___',['ы','ым','ың'],'Его/её: после согласной -ы.'],
+['«моя дочь» — қыз___',['ым','м','ы'],'Мой: после согласной -ым.'],
+['«У меня есть машина.»',['Менің машинам бар.','Мен машинамын.','Маған машина бар.'],'Менің + предмет с окончанием + бар.'],
+['«У меня нет собаки.»',['Менің итім жоқ.','Менің итім емес.','Мен итім жоқ.'],'Отсутствие — жоқ, а не емес.']]},
+
+{id:5,lvl:'A1',kk:'Жұмысым',ru:'Работа и профессии',
+sit:'В обеденный перерыв Ерлан расспрашивает Анну о работе.',
+dlg:[['Ерлан','Сіз кім болып жұмыс істейсіз?','Кем вы работаете?'],['Анна','Мен дизайнермін. Бір компанияда жұмыс істеймін.','Я дизайнер. Работаю в одной компании.'],['Ерлан','Жұмысыңыз ұнай ма?','Вам нравится ваша работа?'],['Анна','Иә, өте ұнайды. Жұмысым қызықты, бірақ кейде қиын.','Да, очень. Работа интересная, но иногда трудная.'],['Ерлан','Жұмыс күні сағат нешеде басталады?','Во сколько начинается рабочий день?'],['Анна','Тоғызда басталады, алтыда бітеді. Ал сіз не істейсіз?','В девять начинается, в шесть заканчивается. А вы чем занимаетесь?'],['Ерлан','Мен бағдарламашымын. Үйден жұмыс істеймін, кейде осында келемін.','Я программист. Работаю из дома, иногда прихожу сюда.'],['Анна','Әріптестеріңіз қайда?','А где ваши коллеги?'],['Ерлан','Олар Астанада тұрады.','Они живут в Астане.']],
+ph:[['Қай жерде жұмыс істейсіз?','Где вы работаете?'],['Мен … болып жұмыс істеймін.','Я работаю … (кем).'],['Мен демалыстамын.','Я в отпуске.']],
+use:'Рассказ о себе на собеседовании, знакомстве, в анкете. Конструкция «Маған ұнайды» нужна каждый день.',
+words:`жұмыс|работа|💼|t
+жұмыс істеу|работать
+мамандық|профессия
+дәрігер|врач|🩺|t
+мұғалім|учитель|🧑‍🏫
+бағдарламашы|программист|💻
+есепші|бухгалтер|🧮
+жүргізуші|водитель|🚗
+сатушы|продавец
+кеңсе|офис|🏢
+әріптес|коллега
+бастық|начальник
+қызықты|интересный||t
+қиын|трудный
+оңай|лёгкий
+ұнау|нравиться|❤️
+басталу|начинаться
+бітү|заканчиваться
+бірақ|но
+кейде|иногда
+заңгер|юрист
+аспазшы|повар|🧑‍🍳
+құрылысшы|строитель|👷
+полицей|полицейский|👮
+зейнеткер|пенсионер
+жалақы|зарплата|💰
+түскі үзіліс|обеденный перерыв
+кәсіпорын|предприятие
+мекеме|учреждение
+зауыт|завод|🏭
+қызмет|служба; услуга
+қызметкер|сотрудник
+жұмыссыз|безработный
+жұмыс беруші|работодатель
+түйіндеме|резюме
+сұхбат|собеседование; интервью
+тәжірибе|опыт
+жоба|проект
+тапсырма|задание
+есеп|отчёт; расчёт
+келісімшарт|договор
+еңбек|труд
+табыс|доход
+кәсіпкер|предприниматель
+маман|специалист
+тәжірибелі|опытный
+білім|образование; знание|🎓
+университет|университет
+бітіру|окончить
+шаршау|уставать|😩
+адал|честный
+жалқау|ленивый
+еңбекқор|трудолюбивый
+зейнетақы|пенсия
+мансап|карьера`,
+gram:`<h3>Полное спряжение в настоящем времени</h3>
+<div class="tbl"><table><tr><th></th><th>жаз — писать</th><th>істе — делать</th><th>оқы — читать</th></tr>
+<tr><td>мен</td><td>жаз<span class="sfx">амын</span></td><td>істе<span class="sfx">ймін</span></td><td>оқи<span class="sfx">мын</span></td></tr>
+<tr><td>сен</td><td>жаз<span class="sfx">асың</span></td><td>істе<span class="sfx">йсің</span></td><td>оқи<span class="sfx">сың</span></td></tr>
+<tr><td>сіз</td><td>жаз<span class="sfx">асыз</span></td><td>істе<span class="sfx">йсіз</span></td><td>оқи<span class="sfx">сыз</span></td></tr>
+<tr><td>ол</td><td>жаз<span class="sfx">ады</span></td><td>істе<span class="sfx">йді</span></td><td>оқи<span class="sfx">ды</span></td></tr>
+<tr><td>біз</td><td>жаз<span class="sfx">амыз</span></td><td>істе<span class="sfx">йміз</span></td><td>оқи<span class="sfx">мыз</span></td></tr></table></div>
+<p>Глаголы на -ы/-і (оқы, жүзі) сливают окончание: оқы + й → <b>оқи</b>.</p>
+<h3>«Мне нравится» — Маған ұнайды</h3>
+<p>Как и в русском, тот, кому нравится, стоит в дательном падеже:</p>
+<div class="tbl"><table><tr><th>мен → маған</th><th>сен → саған</th><th>сіз → сізге</th><th>ол → оған</th><th>біз → бізге</th></tr></table></div>
+<div class="ex">Маған жұмысым <b>ұнайды</b>. — Мне нравится моя работа. · Оған кофе <b>ұнамайды</b>. — Ему не нравится кофе.</div>
+<h3>Кем вы работаете?</h3>
+<div class="ex">Сіз кім <b>болып</b> жұмыс істейсіз? → Мен мұғалім болып жұмыс істеймін. / Мен мұғаліммін.</div>
+<p>Место работы — в местном падеже: компания<b>да</b>, кеңсе<b>де</b>, мектеп<b>те</b>, аурухана<b>да</b>.</p>`,
+gx:[['«Я работаю» — жұмыс істей___',['мін','ді','сіз'],'Мен → -мін.'],
+['«Она пишет» — жаз___',['ады','амын','асың'],'3-е лицо: -ады.'],
+['«Ты читаешь» — оқи___',['сың','сыз','мын'],'Сен → -сың.'],
+['«Мне нравится»',['Маған ұнайды','Мен ұнаймын','Менің ұнайды'],'Кому нравится — дательный падеж: маған.'],
+['«тебе» (дат. падеж)',['саған','сенге','сенің'],'Особая форма: сен → саған.'],
+['Кеңсе___ жұмыс істейсіз бе? (В офисе работаете?)',['де','ге','ден'],'Где? — местный падеж.']]},
+
+{id:6,lvl:'A1+',kk:'Дүкенде',ru:'В магазине',
+sit:'Анна заходит в магазин у дома за продуктами.',
+dlg:[['Сатушы','Сәлеметсіз бе! Не керек?','Здравствуйте! Что вам нужно?'],['Анна','Сәлеметсіз бе! Маған бір нан және бір литр сүт беріңізші.','Здравствуйте! Дайте мне, пожалуйста, хлеб и литр молока.'],['Сатушы','Тағы не керек?','Что-нибудь ещё?'],['Анна','Алма қанша тұрады?','Сколько стоят яблоки?'],['Сатушы','Бір келісі бес жүз теңге.','Пятьсот тенге за килограмм.'],['Анна','Онда екі келі алма беріңізші.','Тогда дайте, пожалуйста, два килограмма яблок.'],['Сатушы','Жақсы. Пакет керек пе?','Хорошо. Пакет нужен?'],['Анна','Иә, керек. Барлығы қанша?','Да, нужен. Сколько всего?'],['Сатушы','Барлығы бір мың сегіз жүз теңге. Картамен бе, қолма-қол ма?','Всего тысяча восемьсот тенге. Картой или наличными?'],['Анна','Картамен.','Картой.'],['Сатушы','Рахмет! Тағы келіңіз!','Спасибо! Приходите ещё!']],
+ph:[['Мынаны көрсетіңізші.','Покажите, пожалуйста, вот это.'],['Арзанырақ бар ма?','Есть подешевле?'],['Картамен төлеуге бола ма?','Можно оплатить картой?'],['Чек керек емес.','Чек не нужен.']],
+use:'Магазин, рынок (базар), киоск. На базаре можно торговаться: «Арзанырақ бар ма?», «Жеңілдік жасаңызшы» — сделайте скидку.',
+words:`дүкен|магазин|🏪|t
+нан|хлеб|🍞|t
+сүт|молоко|🥛
+су|вода|💧
+ет|мясо|🥩|t
+жұмыртқа|яйцо|🥚
+алма|яблоко|🍎
+қант|сахар
+шай|чай|🍵
+ірімшік|сыр|🧀
+күріш|рис|🍚
+көкөніс|овощи|🥦
+жеміс|фрукты|🍇
+келі|килограмм|⚖️
+баға|цена
+қымбат|дорогой|💎
+арзан|дешёвый
+ақша|деньги|💵
+теңге|тенге|₸
+қанша|сколько (стоит)
+керек|нужно
+беру|давать
+алу|брать; покупать
+тағы|ещё
+барлығы|всего, итого
+айран|айран, кефир
+қаймақ|сметана
+шұжық|колбаса
+ұн|мука
+макарон|макароны|🍝
+жарма|крупа
+қарақұмық|гречка
+сүзбе|творог
+консерві|консервы|🥫
+тоқаш|булочка
+печенье|печенье|🍪
+кәмпит|конфета
+шоколад|шоколад|🍫
+сусын|напиток|🥤
+сабын|мыло|🧼
+тіс пастасы|зубная паста
+себет|корзина
+сөмке|сумка|👜
+чек|чек
+қайтару|возвращать
+сату|продавать
+сапалы|качественный
+балғын|свежий
+қорап|коробка
+бөтелке|бутылка|🍾
+литр|литр
+грамм|грамм`,
+gram:`<h3>Куда? Кому? — дательный падеж (барыс септік)</h3>
+<p>Окончание <b>-ға/-ге</b>, после глухих — <b>-қа/-ке</b>. После притяжательных -м, -ң — просто <b>-а/-е</b>.</p>
+<div class="ex">дүкен<b>ге</b> — в магазин · базар<b>ға</b> — на рынок · мектеп<b>ке</b> — в школу · анам<b>а</b> — моей маме</div>
+<h3>«Мне нужно» — Маған … керек</h3>
+<div class="ex">Маған нан <b>керек</b>. — Мне нужен хлеб. · Сізге не керек? — Что вам нужно? · Пакет керек емес. — Пакет не нужен.</div>
+<h3>Вежливая просьба: -ңызшы</h3>
+<p>Основа глагола + <b>(ы)ңыз/(і)ңіз</b> + <b>шы/ші</b> — «пожалуйста, сделайте»:</p>
+<div class="ex">бер → бер<b>іңізші</b> — дайте, пожалуйста · көрсет → көрсет<b>іңізші</b> — покажите · қайтала → қайтала<b>ңызшы</b> — повторите</div>
+<h3>Чем? С кем? — творительный (көмектес септік)</h3>
+<p><b>-мен</b>, после з, ж — <b>-бен</b>, после глухих — <b>-пен</b>:</p>
+<div class="ex">карта<b>мен</b> — картой · автобус<b>пен</b> — на автобусе · досым<b>мен</b> — с другом</div>
+<h3>Цены</h3>
+<p><b>Қанша тұрады?</b> — Сколько стоит? Ответ: бес жүз теңге. «За килограмм» — <b>бір келісі</b> (букв. «его один килограмм»).</p>`,
+gx:[['«в магазин» — дүкен___',['ге','де','нен'],'Куда? — дательный; дүкен мягкое → -ге.'],
+['«на рынок» — базар___',['ға','да','қа'],'После «р» — -ға.'],
+['«в школу» — мектеп___',['ке','ге','те'],'После глухого «п» — -ке.'],
+['«Мне нужен хлеб.»',['Маған нан керек.','Мен нан керек.','Менде нан керек.'],'Кому нужно — дательный: маған.'],
+['«Дайте, пожалуйста» — бер___',['іңізші','емін','ді'],'Вежливая просьба: -іңізші.'],
+['«картой» — карта___',['мен','да','ға'],'Чем? — творительный -мен.']]},
+
+{id:7,lvl:'A1+',kk:'Түстер мен киім',ru:'Цвета и одежда',
+sit:'Зима близко. Анна ищет тёплую куртку в торговом центре.',
+dlg:[['Сатушы','Сәлеметсіз бе! Көмектесейін бе?','Здравствуйте! Вам помочь?'],['Анна','Иә, маған қысқы күртеше керек.','Да, мне нужна зимняя куртка.'],['Сатушы','Қандай түсті?','Какого цвета?'],['Анна','Қара немесе сұр.','Чёрную или серую.'],['Сатушы','Мынау қалай? Өлшеміңіз қандай?','Как вам эта? Какой у вас размер?'],['Анна','Қырық төрт. Киіп көруге бола ма?','Сорок четвёртый. Можно примерить?'],['Сатушы','Әрине. Киім ауыстыратын бөлме анда.','Конечно. Примерочная вон там.'],['Анна','Бұл маған кішкентай. Үлкенірек бар ма?','Она мне мала. Есть побольше?'],['Сатушы','Міне, қырық алтыншы өлшем.','Вот, сорок шестой размер.'],['Анна','Керемет, маған ұнайды! Мұны аламын.','Отлично, мне нравится! Беру её.']],
+ph:[['Басқа түсі бар ма?','Есть другой цвет?'],['Бұл қанша тұрады?','Сколько это стоит?'],['Жеңілдік бар ма?','Есть скидка?']],
+use:'Покупка одежды, описание вещей и людей («в красной куртке»), выбор товара по цвету.',
+words:`түс|цвет|🎨
+ақ|белый|#FFFFFF|t
+қара|чёрный|#1E1E1E|t
+қызыл|красный|#D23B30|t
+көк|синий; голубой|#2C6FD1
+жасыл|зелёный|#2E9A4A
+сары|жёлтый|#F2C200
+қоңыр|коричневый|#7A4B2A
+сұр|серый|#8D9396
+қызғылт|розовый|#F08FB5
+киім|одежда
+көйлек|платье; рубашка|👗
+шалбар|брюки|👖
+күртеше|куртка|🧥
+аяқ киім|обувь|👟
+бас киім|шапка|🧢
+өлшем|размер
+үлкен|большой
+кішкентай|маленький
+әдемі|красивый
+жаңа|новый
+немесе|или
+мынау|вот это
+міне|вот (держите)
+керемет|отлично
+жейде|рубашка|👔
+футболка|футболка|👕
+белдемше|юбка
+жемпір|свитер
+пальто|пальто
+тон|шуба
+етік|сапоги|👢
+кроссовка|кроссовки
+шұлық|носки|🧦
+қолғап|перчатки|🧤
+мойынорағыш|шарф|🧣
+қалпақ|шляпа|👒
+көзілдірік|очки|👓
+әмиян|кошелёк|👛
+түйме|пуговица
+қалта|карман
+жүн|шерсть
+мақта|хлопок
+былғары|кожа
+кию|надевать
+шешу|снимать (одежду)
+тар|тесный, узкий
+кең|просторный, широкий
+ұзын|длинный
+қысқа|короткий
+жеңіл|лёгкий (по весу)
+ауыр|тяжёлый
+күлгін|фиолетовый|#7E57C2
+қызғылт сары|оранжевый|#F28C28
+көгілдір|голубой|#7EC8F2
+қою|тёмный (о цвете); густой
+ескі|старый (о вещи)
+биік|высокий (о предмете)
+жуан|толстый
+жіңішке|тонкий
+тез|быстро
+ақырын|тихо, медленно
+жұмсақ|мягкий`,
+gram:`<h3>Множественное число</h3>
+<div class="tbl"><table><tr><th>Окончание</th><th>Когда</th><th>Примеры</th></tr>
+<tr><td class="sfx">-лар/-лер</td><td>после гласных, р, у, й</td><td>бала<b>лар</b> — дети, үй<b>лер</b> — дома</td></tr>
+<tr><td class="sfx">-дар/-дер</td><td>после л, м, н, ң, з, ж</td><td>адам<b>дар</b> — люди, киім<b>дер</b> — одежда</td></tr>
+<tr><td class="sfx">-тар/-тер</td><td>после глухих</td><td>кітап<b>тар</b> — книги, түс<b>тер</b> — цвета</td></tr></table></div>
+<h3>Прилагательные не меняются</h3>
+<p>Прилагательное стоит <b>перед</b> существительным и никогда не получает окончаний:</p>
+<div class="ex">қызыл көйлек — красное платье · қызыл көйлек<b>тер</b> — красные платья · жаңа күртешемен — в новой куртке</div>
+<h3>Это / то</h3>
+<p><b>бұл</b> — это, этот · <b>мынау</b> — вот это (рядом) · <b>анау</b> — вон то · <b>сол</b> — тот самый. Форма «это» в винительном: <b>мұны</b> аламын — беру это.</p>
+<h3>Можно? — -уға бола ма?</h3>
+<div class="ex">Киіп көр<b>уге бола ма</b>? — Можно примерить? · Картамен төле<b>уге бола ма</b>? — Можно оплатить картой?</div>
+<h3>Больше / меньше</h3>
+<p>Суффикс <b>-рақ/-рек, -ырақ/-ірек</b>: үлкен<b>ірек</b> — побольше, арзан<b>ырақ</b> — подешевле, жақсы<b>рақ</b> — получше.</p>
+<p>Заметьте: <b>көк</b> — и синий, и «зелёный» о чае и траве: <i>көк шай</i> — зелёный чай.</p>`,
+gx:[['«книги» — кітап___',['тар','лар','дар'],'После глухого «п» — -тар.'],
+['«дети» — бала___',['лар','дар','тер'],'После гласной — -лар.'],
+['«цвета» — түс___',['тер','лер','дер'],'После глухого «с», мягкое слово — -тер.'],
+['«дома» — үй___',['лер','дер','тер'],'После «й» — -лер.'],
+['«красные платья»',['қызыл көйлектер','қызылдар көйлек','көйлектер қызыл'],'Прилагательное не меняется и стоит впереди.'],
+['«Можно примерить?»',['Киіп көруге бола ма?','Киімді аламын.','Киіп көрдім.'],'Можно? — -уға/-уге бола ма?']]},
+
+{id:8,lvl:'A1+',kk:'Автовокзалда',ru:'Билеты и транспорт',
+sit:'Анна покупает билет на междугородний автобус до Талдыкоргана.',
+dlg:[['Анна','Сәлеметсіз бе! Маған Талдықорғанға бір билет керек.','Здравствуйте! Мне нужен один билет до Талдыкоргана.'],['Кассир','Қашан барасыз?','Когда поедете?'],['Анна','Ертең таңертең.','Завтра утром.'],['Кассир','Автобус сағат сегізде және онда жүреді.','Автобус отправляется в восемь и в десять.'],['Анна','Сағат онға беріңізші. Билет қанша тұрады?','На десять, пожалуйста. Сколько стоит билет?'],['Кассир','Үш мың бес жүз теңге. Бару-қайту ма?','Три тысячи пятьсот тенге. Туда и обратно?'],['Анна','Жоқ, тек бір жаққа. Автобус қай платформадан кетеді?','Нет, только в одну сторону. С какой платформы отправляется автобус?'],['Кассир','Бесінші платформадан. Орныңыз — он екі.','С пятой платформы. Ваше место — двенадцать.'],['Анна','Жолға неше сағат кетеді?','Сколько часов в пути?'],['Кассир','Шамамен төрт сағат. Жолыңыз болсын!','Примерно четыре часа. Счастливого пути!']],
+ph:[['Бұл автобус орталыққа бара ма?','Этот автобус идёт в центр?'],['Келесі аялдама қандай?','Какая следующая остановка?'],['Маған осы жерде түсу керек.','Мне здесь выходить.'],['Жол ақысы қанша?','Сколько стоит проезд?'],['Сағат неше?','Который час?']],
+use:'Касса автовокзала и вокзала, городской автобус, такси. «Жолыңыз болсын!» — пожелание доброго пути, его говорят всем уезжающим.',
+words:`автобус|автобус|🚌
+аялдама|остановка|🚏|t
+билет|билет|🎫
+орын|место|💺
+қашан|когда||t
+сағат|час; часы|🕒|t
+жарым|половина (о времени)
+бүгін|сегодня
+ертең|завтра
+кеше|вчера
+таңертең|утром|🌅
+кешке|вечером|🌆
+бару|идти, ехать (туда)
+келу|приходить, приезжать
+кету|уходить, уезжать
+түсу|выходить (из транспорта)
+жол|дорога, путь|🛣️
+бір жаққа|в одну сторону
+бару-қайту|туда и обратно
+тек|только
+шамамен|примерно
+трамвай|трамвай|🚋
+троллейбус|троллейбус
+велосипед|велосипед|🚲
+жолаушы|пассажир
+кассир|кассир
+кесте|расписание
+бекет|станция
+вокзал|вокзал|🚉
+платформа|платформа
+жол ақысы|плата за проезд
+мінү|садиться (в транспорт)
+ауысу|пересаживаться
+ерте|рано
+кеш|поздно
+алдыңғы|предыдущий
+минут|минута
+секунд|секунда
+жарты сағат|полчаса
+ширек|четверть
+тәулік|сутки
+таң|рассвет, раннее утро
+түстен кейін|после полудня
+жүргізу|водить (машину)
+рейс|рейс
+жолға шығу|отправляться в путь`,
+gram:`<h3>Время</h3>
+<div class="ex">Сағат неше? — Который час? → Сағат бес. — Пять часов.</div>
+<div class="ex">Сағат нешеде? — Во сколько? → Сағат бес<b>те</b>. — В пять (местный падеж).</div>
+<p><b>жарым</b> — половина: сағат үш жарым — 3:30, сағат үш жарым<b>да</b> — в 3:30. Минуты называют числом: сағат сегіз он бес — 8:15.</p>
+<h3>Вопросительные слова</h3>
+<div class="tbl"><table><tr><th>Слово</th><th>Значение</th><th>Пример</th></tr>
+<tr><td>кім</td><td>кто</td><td>Ол кім?</td></tr><tr><td>не</td><td>что</td><td>Не керек?</td></tr>
+<tr><td>қайда</td><td>где; куда</td><td>Қайда барасыз?</td></tr><tr><td>қайдан</td><td>откуда</td><td>Қайдан келдіңіз?</td></tr>
+<tr><td>қашан</td><td>когда</td><td>Қашан барасыз?</td></tr><tr><td>қанша / неше</td><td>сколько</td><td>Билет қанша тұрады?</td></tr>
+<tr><td>қандай</td><td>какой</td><td>Келесі аялдама қандай?</td></tr><tr><td>қай</td><td>который</td><td>Қай платформа?</td></tr>
+<tr><td>неге</td><td>почему</td><td>Неге кешіктіңіз?</td></tr><tr><td>қалай</td><td>как</td><td>Қалай барамын?</td></tr></table></div>
+<h3>Куда, откуда, до</h3>
+<div class="ex">Алматы<b>ға</b> барамын — еду в Алматы · Шымкент<b>тен</b> келдім — приехал из Шымкента · Астана<b>ға дейін</b> — до Астаны</div>
+<p>Настоящее время означает и будущее: <b>Ертең барамын</b> — завтра поеду.</p>`,
+gx:[['«Во сколько?»',['Сағат нешеде?','Сағат неше?','Қанша?'],'«Во сколько» — местный падеж: нешеде.'],
+['«в 8 часов» — сағат сегіз___',['де','ге','ден'],'Когда? — местный падеж.'],
+['«в 3:30»',['сағат үш жарымда','сағат жарым үште','үш сағат жарым'],'Число + жарым + -да.'],
+['«Когда?»',['Қашан?','Қайда?','Қалай?'],'Қашан — когда.'],
+['«Куда вы едете?»',['Қайда барасыз?','Қайдан келдіңіз?','Қашан барасыз?'],'Қайда + бару.'],
+['«до Астаны» — Астана___ дейін',['ға','да','дан'],'дейін требует дательного падежа.']]},
+
+{id:9,lvl:'A2',kk:'Кафеде',ru:'В кафе',
+sit:'Анна и подруга обедают в кафе национальной кухни.',
+dlg:[['Даяшы','Қош келдіңіз! Неше адамсыздар?','Добро пожаловать! Сколько вас?'],['Анна','Екеуміз. Бос үстел бар ма?','Нас двое. Есть свободный столик?'],['Даяшы','Иә, мына жерге отырыңыздар. Міне, мәзір.','Да, садитесь сюда. Вот меню.'],['Анна','Рахмет. Маған палау және көк шай, ал досыма сорпа беріңізші.','Спасибо. Мне плов и зелёный чай, а подруге — суп, пожалуйста.'],['Даяшы','Шай қантпен бе?','Чай с сахаром?'],['Анна','Жоқ, қантсыз.','Нет, без сахара.'],['Даяшы','Тағы бірдеңе керек пе?','Что-нибудь ещё?'],['Анна','Жоқ, әзірге болды.','Нет, пока всё.'],['Анна','Кешіріңіз! Есепшотты әкеліңізші.','Извините! Принесите, пожалуйста, счёт.'],['Даяшы','Міне. Ұнады ма?','Вот, пожалуйста. Понравилось?'],['Анна','Иә, өте дәмді болды! Рахмет!','Да, было очень вкусно! Спасибо!']],
+ph:[['Мәзірді беріңізші.','Дайте, пожалуйста, меню.'],['Не ұсынасыз?','Что посоветуете?'],['Етсіз тамақ бар ма?','Есть блюда без мяса?'],['Өзіммен алып кетемін.','Возьму с собой.'],['Ас болсын!','Приятного аппетита!']],
+use:'Кафе, столовая, доставка, гости. «Ас болсын!» — приятного аппетита; после еды хозяевам говорят «Рахмет, дәмді болды».',
+words:`мәзір|меню|📋|t
+даяшы|официант
+тамақ|еда|🍽️|t
+сорпа|суп; бульон|🍲
+палау|плов
+салат|салат|🥗
+шырын|сок|🧃
+кофе|кофе|☕
+тұз|соль|🧂
+дәмді|вкусный|😋|t
+ыстық|горячий|🔥
+суық|холодный|🧊
+үстел|стол
+бос|свободный
+есепшот|счёт|🧾
+ішу|пить
+жеу|есть, кушать
+отыру|сидеть, садиться|🪑
+әкелу|приносить
+әзірге|пока (что)
+бал|мёд|🍯
+қасық|ложка|🥄
+шанышқы|вилка|🍴
+пышақ|нож|🔪
+кесе|пиала, чашка
+ас|еда, блюдо
+манты|манты|🥟
+лағман|лагман|🍜
+қуырдақ|куырдак (жаркое)
+шұбат|шубат (верблюжье молоко)
+сүтті шай|чай с молоком
+торт|торт
+балмұздақ|мороженое|🍦
+бұрыш|перец; угол
+қуыру|жарить
+қайнату|варить, кипятить
+тұзды|солёный
+қышқыл|кислый
+аш|голодный
+тоқ|сытый
+шөлдеу|хотеть пить
+шай ақы|чаевые
+тапсырыс|заказ
+тапсырыс беру|заказывать
+жеткізу|доставлять; доставка|🛵
+алып кету|взять с собой
+майлы|жирный
+дәмсіз|невкусный
+тағам|блюдо`,
+gram:`<h3>Винительный падеж (табыс септік)</h3>
+<p>Ставится, когда объект <b>определённый</b> — «этот, тот самый, мой»:</p>
+<div class="tbl"><table><tr><th>Окончание</th><th>Когда</th><th>Пример</th></tr>
+<tr><td class="sfx">-ны/-ні</td><td>после гласных</td><td>сорпа<b>ны</b>, кофе<b>ні</b></td></tr>
+<tr><td class="sfx">-ды/-ді</td><td>после л, р, й, у, м, н, ң, з, ж</td><td>мәзір<b>ді</b>, нан<b>ды</b></td></tr>
+<tr><td class="sfx">-ты/-ті</td><td>после глухих</td><td>есепшот<b>ты</b>, ет<b>ті</b></td></tr></table></div>
+<div class="ex">Мен шай ішемін. — Я пью чай (вообще). · Шай<b>ды</b> ішіңіз. — Выпейте чай (вот этот).</div>
+<h3>С и без: -мен / -сыз</h3>
+<div class="ex">қант<b>пен</b> — с сахаром · қант<b>сыз</b> — без сахара · сүт<b>сіз</b> — без молока · ет<b>сіз</b> — без мяса</div>
+<h3>Собирательные числа: нас двое</h3>
+<p><b>екеу</b> — двое, <b>үшеу</b> — трое, <b>төртеу</b> — четверо. «Нас двое» — <b>Екеуміз</b>, «их трое» — үшеуі.</p>
+<h3>Как сделать заказ</h3>
+<div class="ex">Маған палау, ал досыма сорпа беріңізші. — Мне плов, а другу суп, пожалуйста.</div>
+<p>Слово <b>ал</b> в начале — «а»: <i>Ал сіз?</i> — А вы?</p>`,
+gx:[['Есепшот___ әкеліңізші. (Принесите счёт.)',['ты','ды','ны'],'Определённый объект; после глухого «т» — -ты.'],
+['Мәзір___ беріңізші. (Дайте меню.)',['ді','ті','ні'],'После «р» — -ді.'],
+['«Я пью чай» (вообще)',['Мен шай ішемін.','Мен шайды ішемін.','Мен шайға ішемін.'],'Неопределённый объект — без окончания.'],
+['Мына сорпа___ жеңіз. (Ешьте этот суп.)',['ны','ды','ты'],'После гласной — -ны.'],
+['«Нас двое.»',['Екеуміз.','Екіміз.','Екі біз.'],'Собирательное число екеу + -міз.'],
+['«без сахара» — қант___',['сыз','пен','та'],'-сыз/-сіз = без.']]},
+
+{id:10,lvl:'A2',kk:'Қалада',ru:'В городе: как пройти',
+sit:'Анне нужна аптека. Она спрашивает дорогу у прохожего.',
+dlg:[['Анна','Кешіріңіз, жақын жерде дәріхана бар ма?','Извините, здесь поблизости есть аптека?'],['Өтуші','Иә, бар. Тура жүріңіз, содан кейін солға бұрылыңыз.','Да, есть. Идите прямо, потом поверните налево.'],['Анна','Алыс па?','Далеко?'],['Өтуші','Жоқ, жақын. Жаяу бес минут.','Нет, близко. Пять минут пешком.'],['Өтуші','Дәріхана банктің жанында.','Аптека рядом с банком.'],['Анна','Ал метро қайда?','А где метро?'],['Өтуші','Метро алыс емес, дәріхананың артында.','Метро недалеко, за аптекой.'],['Анна','Үлкен рахмет!','Большое спасибо!'],['Өтуші','Оқасы жоқ.','Не за что.']],
+ph:[['… қайда?','Где …?'],['Қалай баруға болады?','Как туда добраться?'],['Картадан көрсетіңізші.','Покажите на карте.'],['Мен адасып қалдым.','Я заблудился(-ась).']],
+use:'Поиск аптеки, банка, остановки; объяснить таксисту, где остановиться: «Осы жерде тоқтаңызшы» — остановите здесь.',
+words:`көше|улица|🛣️|t
+үй|дом|🏠
+дәріхана|аптека|💊|t
+банк|банк|🏦
+аурухана|больница|🏥
+базар|рынок|🧺
+мейрамхана|ресторан
+метро|метро|🚇
+оңға|направо|➡️|t
+солға|налево|⬅️
+тура|прямо|⬆️
+жақын|близко
+алыс|далеко
+жанында|рядом с
+артында|за, позади
+алдында|перед
+бұрылу|поворачивать|↪️
+жүру|идти, ходить|🚶
+жаяу|пешком
+содан кейін|потом, затем
+қала орталығы|центр города
+алаң|площадь
+саябақ|парк
+мешіт|мечеть|🕌
+шіркеу|церковь|⛪
+мұражай|музей|🏛️
+театр|театр|🎭
+кітапхана|библиотека
+мектеп|школа|🏫
+сауда орталығы|торговый центр|🏬
+көпір|мост|🌉
+өзен|река
+ғимарат|здание
+бағыт|направление
+карта|карта
+шығыс|восток; выход
+батыс|запад
+солтүстік|север|🧭
+оңтүстік|юг
+жоғары|вверх, наверху
+төмен|вниз, внизу
+ортасында|посередине
+ішінде|внутри
+сыртында|снаружи
+адасу|заблудиться
+табу|находить
+іздеу|искать|🔍
+зоопарк|зоопарк
+стадион|стадион|🏟️
+полиция|полиция|🚓
+жерасты өткелі|подземный переход`,
+gram:`<h3>Родительный падеж + «рядом, перед, за»</h3>
+<p>«Рядом с банком» по-казахски — «банка рядом»: родительный падеж + послелог.</p>
+<div class="tbl"><table><tr><th>Окончание</th><th>Когда</th><th>Пример</th></tr>
+<tr><td class="sfx">-ның/-нің</td><td>после гласных и м, н, ң</td><td>дәріхана<b>ның</b>, дүкен<b>нің</b></td></tr>
+<tr><td class="sfx">-дың/-дің</td><td>после л, р, й, у, з, ж</td><td>үй<b>дің</b>, базар<b>дың</b></td></tr>
+<tr><td class="sfx">-тың/-тің</td><td>после глухих</td><td>банк<b>тің</b>, мектеп<b>тің</b></td></tr></table></div>
+<div class="tbl"><table><tr><th>жанында</th><th>алдында</th><th>артында</th><th>ішінде</th><th>үстінде</th><th>астында</th></tr>
+<tr><td>рядом</td><td>перед</td><td>за</td><td>внутри</td><td>на</td><td>под</td></tr></table></div>
+<div class="ex">банктің <b>жанында</b> — рядом с банком · үйдің <b>алдында</b> — перед домом · үстелдің <b>үстінде</b> — на столе</div>
+<h3>Повелительное наклонение</h3>
+<p>На «ты» — просто основа: <b>жүр</b>, <b>бұрыл</b>, <b>кел</b>. Вежливо — + <b>(ы)ңыз/(і)ңіз</b>:</p>
+<div class="ex">жүр<b>іңіз</b> — идите · бұрыл<b>ыңыз</b> — поверните · отыр<b>ыңыз</b> — садитесь · тоқта<b>ңыз</b> — остановитесь</div>
+<h3>Направо или справа?</h3>
+<p><b>оңға / солға</b> (куда — дательный) — направо / налево. <b>оңда / солда</b> (где — местный) — справа / слева.</p>`,
+gx:[['«рядом с банком» — банк___ жанында',['тің','тың','нің'],'После глухого «к», мягкое слово — -тің.'],
+['«перед домом» — үй___ алдында',['дің','тің','нің'],'После «й» — -дің.'],
+['«Поверните налево.»',['Солға бұрылыңыз.','Оңға бұрылыңыз.','Солда бұрылыңыз.'],'Куда? — солға (дательный).'],
+['«Идите прямо.»',['Тура жүріңіз.','Тура жүрдім.','Тураға жүріңіз.'],'Вежливое повеление: жүріңіз.'],
+['«внутри аптеки» — дәріхана___ ішінде',['ның','нің','дың'],'После гласной, твёрдое слово — -ның.'],
+['«справа» (где?)',['оңда','оңға','оңнан'],'Где? — местный падеж: оңда.']]},
+
+{id:11,lvl:'A2',kk:'Менің күнім',ru:'Мой день и выходные',
+sit:'Понедельник. Айгерім звонит Анне и спрашивает, как прошли выходные и какие планы на субботу.',
+dlg:[['Айгерім','Сәлем, Анна! Кеше не істедің?','Привет, Анна! Что ты вчера делала?'],['Анна','Күндіз жұмыста болдым. Кешке досыммен киноға бардым.','Днём была на работе. Вечером ходила в кино с подругой.'],['Айгерім','Фильм ұнады ма?','Фильм понравился?'],['Анна','Иә, қатты ұнады! Ал сен не істедің?','Да, очень понравился! А ты что делала?'],['Айгерім','Мен үйде демалдым, кітап оқыдым.','Я отдыхала дома, читала книгу.'],['Айгерім','Сенбіде не істейсің?','Что будешь делать в субботу?'],['Анна','Сенбіде тауға барамын. Жексенбіде үйде демаламын.','В субботу поеду в горы. В воскресенье буду отдыхать дома.'],['Айгерім','Мен де тауға барғым келеді!','Я тоже хочу в горы!'],['Анна','Онда бірге барайық! Сағат жетіде кездесейік.','Тогда поехали вместе! Давай встретимся в семь.'],['Айгерім','Келістік! Сенбіге дейін!','Договорились! До субботы!']],
+ph:[['Бүгін қандай күн?','Какой сегодня день?'],['Демалысың қалай өтті?','Как прошли выходные?'],['Уақытың бар ма?','У тебя есть время?'],['Келістік!','Договорились!']],
+use:'Рассказ о том, что вы делали, планы на выходные, договориться о встрече.',
+words:`дүйсенбі|понедельник|Дс|t
+сейсенбі|вторник|Сс
+сәрсенбі|среда|Ср
+бейсенбі|четверг|Бс
+жұма|пятница|Жм|t
+сенбі|суббота|Сб
+жексенбі|воскресенье|Жс
+апта|неделя|📅
+күн|день; солнце|☀️|t
+демалыс|выходные; отдых
+күндіз|днём
+түнде|ночью|🌙
+ояну|просыпаться|⏰
+ұйықтау|спать|😴
+оқу|читать; учиться|📖
+кітап|книга|📕
+көру|видеть, смотреть|👀
+демалу|отдыхать
+тау|гора|⛰️
+дос|друг, подруга
+бірге|вместе
+кездесу|встречаться
+қатты|очень, сильно
+келістік|договорились|🤝
+жуыну|умываться|🚿
+киіну|одеваться
+тамақтану|питаться
+тамақ ішу|есть, кушать
+шай ішу|пить чай
+ерте тұру|рано вставать
+жату|ложиться; лежать
+кеш жату|поздно ложиться
+жұмысқа бару|идти на работу
+үйге қайту|возвращаться домой
+теледидар|телевизор|📺
+серуендеу|гулять
+жинау|убирать; собирать
+жуу|мыть; стирать
+тамақ пісіру|готовить еду
+әдетте|обычно
+әрқашан|всегда
+күнде|каждый день
+биыл|в этом году
+өткен|прошлый
+түні бойы|всю ночь
+демалыс күні|выходной день
+жұмыс күні|рабочий день
+өткен апта|прошлая неделя
+бір күні|однажды
+жаңа ғана|только что
+ұзақ|долго
+жуырда|скоро, недавно
+ертерек|пораньше`,
+gram:`<h3>Прошедшее время: -ды/-ді</h3>
+<p>Основа + <b>-ды/-ді</b> (после глухих — <b>-ты/-ті</b>) + <b>короткие</b> окончания лица:</p>
+<div class="tbl"><table><tr><th></th><th>бар — идти</th><th>көр — видеть</th><th>іш — пить</th></tr>
+<tr><td>мен</td><td>бар<span class="sfx">дым</span></td><td>көр<span class="sfx">дім</span></td><td>іш<span class="sfx">тім</span></td></tr>
+<tr><td>сен</td><td>бар<span class="sfx">дың</span></td><td>көр<span class="sfx">дің</span></td><td>іш<span class="sfx">тің</span></td></tr>
+<tr><td>сіз</td><td>бар<span class="sfx">дыңыз</span></td><td>көр<span class="sfx">діңіз</span></td><td>іш<span class="sfx">тіңіз</span></td></tr>
+<tr><td>ол</td><td>бар<span class="sfx">ды</span></td><td>көр<span class="sfx">ді</span></td><td>іш<span class="sfx">ті</span></td></tr>
+<tr><td>біз</td><td>бар<span class="sfx">дық</span></td><td>көр<span class="sfx">дік</span></td><td>іш<span class="sfx">тік</span></td></tr></table></div>
+<p>Отрицание: <b>-ма/-ме</b> перед окончанием: бар<b>ма</b>дым — не ходил(а), көр<b>ме</b>дім — не видел(а).</p>
+<h3>Хочу: -ғым келеді</h3>
+<p>Основа + <b>-ғы/-гі</b> (после глухих <b>-қы/-кі</b>) + мой/твой… + <b>келеді</b>:</p>
+<div class="ex">бар<b>ғым келеді</b> — я хочу пойти · іш<b>кім келеді</b> — хочу пить · көр<b>гің келе ме</b>? — хочешь посмотреть? · ұйықта<b>ғым келеді</b> — хочу спать</div>
+<h3>Давай(те): -айық</h3>
+<div class="ex">бар<b>айық</b> — пойдём · көр<b>ейік</b> — посмотрим · кездес<b>ейік</b> — встретимся · демал<b>айық</b> — отдохнём</div>
+<h3>Дни недели</h3>
+<p>«В субботу» — <b>сенбіде</b> или <b>сенбі күні</b>. «До субботы» — сенбі<b>ге дейін</b>.</p>`,
+gx:[['«Я ходил(а)» — бар___',['дым','дың','ды'],'Прошедшее время, я: -дым.'],
+['Кеше фильм көр___. (Вчера мы смотрели фильм.)',['дік','дім','ді'],'Мы, прошедшее: -дік.'],
+['«Я не пошёл / не пошла»',['бармадым','бармаймын','бардым'],'Отрицание прошедшего: бар + ма + дым.'],
+['«Я хочу пить» — іш___ келеді',['кім','гім','ғым'],'После глухого «ш»: -кім.'],
+['«Пойдём!»',['Барайық!','Бардық!','Барамыз ба?'],'Приглашение: -айық.'],
+['«в субботу»',['сенбіде','сенбіге','сенбіден'],'Когда? — местный падеж.']]},
+
+{id:12,lvl:'A2',kk:'Пәтер жалдау',ru:'Квартира и аренда',
+sit:'Анна ищет квартиру. Хозяйка показывает ей двухкомнатную квартиру.',
+dlg:[['Үй иесі','Кіріңіз, кіріңіз! Міне, пәтер.','Заходите, заходите! Вот квартира.'],['Анна','Пәтер неше бөлмелі?','Сколько комнат в квартире?'],['Үй иесі','Екі бөлмелі: жатын бөлме және қонақ бөлме. Ас үй үлкен.','Двухкомнатная: спальня и гостиная. Кухня большая.'],['Анна','Жиһаз бар ма?','Мебель есть?'],['Үй иесі','Иә, бәрі бар: кереует, шкаф, үстел, тоңазытқыш, кір жуғыш машина.','Да, всё есть: кровать, шкаф, стол, холодильник, стиральная машина.'],['Анна','Пәтер нешінші қабатта?','На каком этаже квартира?'],['Үй иесі','Бесінші қабатта. Лифт бар.','На пятом этаже. Есть лифт.'],['Анна','Айына қанша тұрады?','Сколько стоит в месяц?'],['Үй иесі','Айына екі жүз мың теңге. Коммуналдық төлемдер бөлек.','Двести тысяч тенге в месяц. Коммунальные платежи отдельно.'],['Анна','Маған ұнайды. Қашан көшуге болады?','Мне нравится. Когда можно переехать?'],['Үй иесі','Ертеңнен бастап. Міне, кілт.','С завтрашнего дня. Вот ключ.']],
+ph:[['Пәтер жалдағым келеді.','Я хочу снять квартиру.'],['Кепіл ақы қанша?','Какой залог?'],['Интернет бар ма?','Интернет есть?'],['Ыстық су жоқ.','Нет горячей воды.']],
+use:'Аренда жилья, разговор с хозяйкой квартиры, вызов мастера, жалоба соседям.',
+words:`пәтер|квартира|🏢|t
+бөлме|комната|🚪|t
+жатын бөлме|спальня|🛏️
+қонақ бөлме|гостиная|🛋️
+ас үй|кухня|🍳
+жуынатын бөлме|ванная|🛁
+дәретхана|туалет|🚽
+терезе|окно|🪟
+есік|дверь
+қабат|этаж
+жиһаз|мебель||t
+кереует|кровать
+орындық|стул
+тоңазытқыш|холодильник
+кілт|ключ|🔑
+ай|месяц
+жалдау|снимать (в аренду)
+көшу|переезжать|🚚
+көрші|сосед
+таза|чистый|✨
+лас|грязный
+жарық|свет; светлый|💡
+бөлек|отдельно
+диван|диван
+кілем|ковёр
+перде|штора
+айна|зеркало|🪞
+шам|лампа
+розетка|розетка|🔌
+жылыту|отопление
+кондиционер|кондиционер
+балкон|балкон
+кіреберіс|подъезд, вход
+лифт|лифт|🛗
+есік қоңырауы|дверной звонок|🔔
+құлып|замок (дверной)
+үй иесі|хозяин квартиры
+жалға беру|сдавать в аренду
+кепіл ақы|залог
+коммуналдық төлемдер|коммунальные платежи
+жөндеу|ремонт; чинить|🛠️
+бұзылу|ломаться
+ағу|течь
+кір жуғыш машина|стиральная машина
+шаңсорғыш|пылесос
+ыдыс|посуда
+үтік|утюг`,
+gram:`<h3>«С чем-то»: суффикс -лы/-лі</h3>
+<p>Делает из существительного прилагательное «имеющий что-то»:</p>
+<div class="ex">екі бөлме<b>лі</b> пәтер — двухкомнатная квартира · жиһаз<b>ды</b> — с мебелью · балкон<b>ды</b> — с балконом · лифт<b>ті</b> үй — дом с лифтом</div>
+<p>Варианты по тем же правилам: <b>-лы/-лі</b> после гласных, р, у, й; <b>-ды/-ді</b> после л, м, н, ң, з, ж; <b>-ты/-ті</b> после глухих.</p>
+<h3>Падеж после «его/её»: вставка н</h3>
+<p>Если у слова есть окончание 3-го лица (-сы, -і), перед падежом появляется <b>н</b>:</p>
+<div class="ex">бөлмесі → бөлмесі<b>нде</b> — в его комнате · бөлмесі<b>не</b> — в его комнату · бөлмесі<b>нен</b> — из его комнаты · бөлмесі<b>н</b> — его комнату</div>
+<h3>С … до …</h3>
+<div class="ex">ертең<b>нен бастап</b> — начиная с завтра · дүйсенбі<b>ден</b> жұма<b>ға дейін</b> — с понедельника по пятницу</div>
+<h3>В месяц, в день, в неделю</h3>
+<p><b>айына</b> — в месяц, <b>күніне</b> — в день, <b>аптасына</b> — в неделю, <b>жылына</b> — в год.</p>
+<h3>Который по счёту?</h3>
+<div class="ex">Нешінші қабатта? — На каком этаже? → Бесінші қабатта. — На пятом.</div>`,
+gx:[['«двухкомнатная квартира» — екі бөлме___ пәтер',['лі','лер','де'],'-лі = «имеющий что-то».'],
+['«в его комнате» — бөлмесі___',['нде','де','нің'],'После притяжательного 3 лица — вставка н: бөлмесінде.'],
+['«с мебелью» — жиһаз___',['ды','лы','ты'],'После «з» — -ды.'],
+['«в месяц»',['айына','айда','айға'],'«в месяц, за месяц» — айына.'],
+['«с понедельника»',['дүйсенбіден бастап','дүйсенбіге бастап','дүйсенбіде дейін'],'С … — исходный падеж + бастап.'],
+['«На каком этаже?»',['Нешінші қабатта?','Неше қабат?','Қай қабатқа?'],'Нешінші — «который по счёту».']]},
+
+{id:13,lvl:'A2',kk:'Дәрігерде',ru:'У врача',
+sit:'Анна простудилась и пришла в поликлинику к терапевту.',
+dlg:[['Дәрігер','Сәлеметсіз бе! Келіңіз, отырыңыз. Сізді не мазалайды?','Здравствуйте! Проходите, садитесь. Что вас беспокоит?'],['Анна','Менің басым ауырады, тамағым да ауырады.','У меня болит голова, и горло тоже болит.'],['Дәрігер','Қашаннан бері?','С каких пор?'],['Анна','Үш күннен бері. Кеше қызуым көтерілді.','Уже три дня. Вчера поднялась температура.'],['Дәрігер','Қазір қызуыңыз отыз жеті жарым. Жөтел бар ма?','Сейчас у вас 37,5. Кашель есть?'],['Анна','Иә, аздап жөтелемін.','Да, немного кашляю.'],['Дәрігер','Сізде тұмау. Қорқынышты емес.','У вас простуда. Ничего страшного.'],['Дәрігер','Мына дәріні күніне үш рет ішіңіз. Көп су ішу керек.','Принимайте это лекарство три раза в день. Нужно пить много воды.'],['Анна','Жұмысқа баруға бола ма?','Можно ходить на работу?'],['Дәрігер','Жоқ, үш күн үйде демалыңыз. Суық су ішпеңіз.','Нет, три дня отдыхайте дома. Не пейте холодную воду.'],['Анна','Рахмет, дәрігер!','Спасибо, доктор!'],['Дәрігер','Тез жазылып кетіңіз!','Скорее выздоравливайте!']],
+ph:[['Жедел жәрдем шақырыңызшы!','Вызовите скорую!'],['Маған дәрігер керек.','Мне нужен врач.'],['Менің аллергиям бар.','У меня аллергия.'],['Рецепт керек пе?','Нужен рецепт?']],
+use:'Поликлиника, аптека, звонок в скорую (103). Объяснить, что болит, и понять назначение врача.',
+words:`бас|голова||t
+көз|глаз|👁️
+құлақ|ухо|👂
+мұрын|нос|👃
+ауыз|рот|👄
+тіс|зуб|🦷
+қол|рука|✋|t
+аяқ|нога|🦵
+іш|живот
+жүрек|сердце|🫀
+ауыру|болеть|🤒|t
+дәрі|лекарство|💊
+қызу|температура|🌡️
+жөтел|кашель
+тұмау|простуда, грипп|🤧
+рет|раз
+денсаулық|здоровье
+жазылу|выздоравливать
+жедел жәрдем|скорая помощь|🚑
+мейірбике|медсестра|👩‍⚕️
+талдау|анализ|🧪
+уайымдау|волноваться
+емхана|поликлиника
+тексеру|проверять, осматривать
+ем|лечение
+емдеу|лечить
+екпе|прививка, укол|💉
+таблетка|таблетка
+қан|кровь|🩸
+қысым|давление
+бас айналу|головокружение
+жүрек айну|тошнота
+жарақат|травма
+сынық|перелом
+күйік|ожог
+аллергия|аллергия
+арқа|спина
+иық|плечо
+мойын|шея
+шаш|волосы
+бет|лицо
+саусақ|палец
+тізе|колено
+әлсіздік|слабость
+сау|здоровый
+науқас|больной, пациент
+тіс дәрігері|стоматолог
+жөтелу|кашлять
+түшкіру|чихать`,
+gram:`<h3>«У меня болит»: часть тела + ауырады</h3>
+<p>Часть тела получает «мой/твой/ваш», глагол — 3-е лицо:</p>
+<div class="ex">Бас<b>ым</b> ауырады. — У меня болит голова. · Тіс<b>ім</b> ауырады. — Болит зуб. · Іш<b>ім</b> ауырады. — Болит живот.</div>
+<div class="ex">Қай жер<b>іңіз</b> ауырады? — Где у вас болит?</div>
+<h3>Нужно сделать: -у керек</h3>
+<div class="ex">Көп су ішу керек. — Нужно пить много воды. · Сізге демалу керек. — Вам нужно отдохнуть.</div>
+<p>С лицом: ішу<b>ім</b> керек — мне нужно выпить, бару<b>ыңыз</b> керек — вам нужно пойти.</p>
+<h3>Не делайте: -ма/-ме + ңыз</h3>
+<div class="ex">іш<b>пе</b>ңіз — не пейте · бар<b>ма</b>ңыз — не ходите · уайымда<b>ма</b>ңыз — не волнуйтесь</div>
+<h3>С каких пор: -дан бері</h3>
+<div class="ex">үш күн<b>нен бері</b> — уже три дня · кеше<b>ден бері</b> — со вчерашнего дня · Қашаннан бері? — С каких пор?</div>
+<h3>Как часто</h3>
+<p><b>күніне үш рет</b> — три раза в день, тамақтан кейін — после еды, тамақтан бұрын — до еды.</p>`,
+gx:[['«У меня болит голова.»',['Менің басым ауырады.','Мен басым ауырамын.','Маған бас ауырады.'],'Часть тела с «моим» + ауырады.'],
+['«Не пейте холодную воду.» Суық су іш___',['пеңіз','іңіз','пейсіз'],'Запрет: -пе + ңіз.'],
+['«уже три дня» — үш күн___ бері',['нен','ге','де'],'бері требует исходного падежа.'],
+['«три раза в день»',['күніне үш рет','үш күнде рет','күн үш рет'],'күніне — в день.'],
+['«Вам нужно отдохнуть.»',['Сізге демалу керек.','Сіз демалу керек.','Сізде демалу керек.'],'Кому нужно — дательный падеж.'],
+['«Где у вас болит?»',['Қай жеріңіз ауырады?','Қайда ауырасыз?','Не ауырады сіз?'],'Қай жер + ваш + ауырады.']]},
+
+{id:14,lvl:'A2',kk:'Ауа райы',ru:'Погода и времена года',
+sit:'Холодное январское утро. Анна и Айгерім говорят о погоде и любимом времени года.',
+dlg:[['Анна','Бүгін ауа райы қандай?','Какая сегодня погода?'],['Айгерім','Бүгін күн ашық, бірақ суық. Минус он градус.','Сегодня ясно, но холодно. Минус десять градусов.'],['Анна','Ойбай, суық екен! Ертең қандай болады?','Ой, как холодно! А завтра какая будет?'],['Айгерім','Ертең қар жауады, жел болады.','Завтра пойдёт снег, будет ветер.'],['Анна','Мен қысты онша ұнатпаймын. Маған жаз ұнайды.','Я не очень люблю зиму. Мне нравится лето.'],['Айгерім','Алматыда көктем өте әдемі: сәуірде алма ағаштары гүлдейді.','В Алматы весна очень красивая: в апреле цветут яблони.'],['Анна','Ал жазда ыстық па?','А летом жарко?'],['Айгерім','Иә, шілдеде отыз бес градусқа дейін болады. Сондықтан біз тауға барамыз.','Да, в июле бывает до тридцати пяти градусов. Поэтому мы ездим в горы.'],['Анна','Күз ше?','А осень?'],['Айгерім','Күзде жаңбыр жиі жауады, бірақ жылы.','Осенью часто идут дожди, но тепло.']],
+ph:[['Бүгін неше градус?','Сколько сегодня градусов?'],['Қолшатыр ал!','Возьми зонт!'],['Жылы киін!','Одевайся тепло!'],['Күн суытып кетті.','Похолодало.']],
+use:'Small talk о погоде, планы на выходные, прогноз перед поездкой.',
+words:`ауа райы|погода|🌤️|t
+ашық|ясный; открытый|☀️
+бұлтты|облачный|☁️
+жаңбыр|дождь|🌧️|t
+қар|снег|❄️|t
+жел|ветер|💨
+жаву|идти (о дожде, снеге)
+жылы|тёплый
+градус|градус
+қыс|зима|⛄
+көктем|весна|🌷
+жаз|лето|🏖️
+күз|осень|🍂
+жыл|год
+қаңтар|январь
+ақпан|февраль
+наурыз|март
+сәуір|апрель
+мамыр|май
+маусым|июнь
+шілде|июль
+тамыз|август
+қыркүйек|сентябрь
+қазан|октябрь
+қараша|ноябрь
+желтоқсан|декабрь
+жиі|часто
+сирек|редко
+сондықтан|поэтому
+ағаш|дерево|🌳
+гүл|цветок|🌸
+қолшатыр|зонт|☂️
+аяз|мороз|🥶
+боран|метель, буран
+тұман|туман|🌫️
+найзағай|молния
+күн күркіреуі|гром
+кемпірқосақ|радуга|🌈
+салқын|прохладный
+құрғақ|сухой
+дымқыл|влажный
+мұз|лёд
+нөсер|ливень
+ауа|воздух
+аспан|небо
+жұлдыз|звезда|⭐
+табиғат|природа
+ит|собака|🐕
+мысық|кошка|🐈
+жылқы|лошадь|🐎
+сиыр|корова|🐄
+қой|овца|🐑
+түйе|верблюд|🐫
+құс|птица|🐦
+ешкі|коза|🐐
+бүркіт|беркут|🦅`,
+gram:`<h3>Погода прилагательными: -лы/-лі</h3>
+<div class="ex">бұлт (облако) → бұлт<b>ты</b> · жел → жел<b>ді</b> · қар → қар<b>лы</b> · жаңбыр → жаңбыр<b>лы</b></div>
+<div class="ex">Бүгін күн бұлтты. — Сегодня облачно. · Қарлы қыс — снежная зима.</div>
+<h3>Будущее: болады, жауады</h3>
+<p>Настоящее время глагола описывает и будущее:</p>
+<div class="ex">Ертең жаңбыр <b>жауады</b>. — Завтра пойдёт дождь. · Жел <b>болады</b>. — Будет ветер.</div>
+<h3>Когда? Сезоны и месяцы с -да/-де</h3>
+<div class="ex">қыс<b>та</b> — зимой · көктем<b>де</b> — весной · жаз<b>да</b> — летом · күз<b>де</b> — осенью · шілде<b>де</b> — в июле · қаңтар<b>да</b> — в январе</div>
+<p><b>Наурыз</b> — не только «март», но и главный весенний праздник, 22 марта: «Наурыз құтты болсын!»</p>
+<h3>Люблю что-то: ұнатамын</h3>
+<p><b>ұнату</b> — «любить, предпочитать», объект в винительном: Мен жаз<b>ды</b> ұнатамын. Сравните: Маған жаз ұнайды. — Мне нравится лето.</p>
+<h3>Екен: «оказывается»</h3>
+<p>Удивление от нового: <i>Суық екен!</i> — Ну и холодно же!</p>`,
+gx:[['«облачно» — бұлт___',['ты','лы','ды'],'После глухого «т» — -ты.'],
+['«летом»',['жазда','жазға','жаздан'],'Когда? — местный падеж.'],
+['«в июле»',['шілдеде','шілдеге','шілдені'],'Месяц + -де.'],
+['«Завтра пойдёт снег.»',['Ертең қар жауады.','Ертең қар жауды.','Кеше қар жауады.'],'Настоящее-будущее: жауады.'],
+['«Я люблю лето.»',['Мен жазды ұнатамын.','Мен жаз ұнайды.','Маған жазды ұнатамын.'],'ұнату + винительный падеж.'],
+['«ветрено» — жел___',['ді','лі','ті'],'После «л» — -ді.']]},
+
+{id:15,lvl:'A2',kk:'Базарда',ru:'На рынке: торгуемся',
+sit:'Суббота. Анна покупает овощи и фрукты на Зелёном базаре.',
+dlg:[['Сатушы','Қызым, кел, қара! Алма, алмұрт, жүзім — бәрі тәтті!','Дочка, подходи, смотри! Яблоки, груши, виноград — всё сладкое!'],['Анна','Қызанақ қалай? Келісі қанша?','Как помидоры? Почём килограмм?'],['Сатушы','Қызанақ келісі мың екі жүзден. Қияр сегіз жүзден.','Помидоры по тысяче двести за кило. Огурцы — по восемьсот.'],['Анна','Қымбат екен. Арзанырақ беріңізші.','Дороговато. Отдайте подешевле.'],['Сатушы','Жарайды, саған мыңнан берейін.','Ладно, тебе отдам по тысяче.'],['Анна','Онда екі келі қызанақ және бір келі қияр алайын.','Тогда возьму два кило помидоров и кило огурцов.'],['Сатушы','Тағы не аласың? Пияз, сәбіз, картоп бар.','Что ещё возьмёшь? Есть лук, морковь, картошка.'],['Анна','Жарты келі пияз беріңізші. Жүзімнен татып көруге бола ма?','Полкило лука, пожалуйста. Можно попробовать виноград?'],['Сатушы','Әрине, жеп көр! Бұл жүзім Түркістаннан келді.','Конечно, попробуй! Этот виноград из Туркестана.'],['Анна','Өте тәтті! Бір келі беріңізші.','Очень сладкий! Дайте килограмм.'],['Сатушы','Барлығы бес мың жүз теңге. Бес мың бер, жетеді.','Всего пять тысяч сто. Давай пять тысяч, хватит.']],
+ph:[['Жеңілдік жасаңызшы.','Сделайте скидку.'],['Соңғы бағасы қанша?','Какая последняя цена?'],['Бір дана беріңізші.','Дайте одну штуку.'],['Пакетке салып беріңізші.','Положите в пакет, пожалуйста.']],
+use:'Базар, ярмарка, торг. Продавцы часто говорят «сен» и зовут «қызым» (дочка), «балам» (сынок) — это тепло, а не грубость.',
+words:`алмұрт|груша|🍐
+жүзім|виноград|🍇|t
+қызанақ|помидор|🍅|t
+қияр|огурец|🥒
+пияз|лук|🧅
+сәбіз|морковь|🥕
+картоп|картофель|🥔|t
+қарбыз|арбуз|🍉
+қауын|дыня|🍈
+лимон|лимон|🍋
+балық|рыба|🐟
+тауық|курица|🍗
+май|масло
+жарты|половина
+дана|штука
+тәтті|сладкий|🍬
+ащы|острый; горький|🌶️
+татып көру|пробовать (на вкус)
+жеңілдік|скидка
+жарайды|ладно|👌
+жету|хватать
+таразы|весы|⚖️
+ең|самый
+шие|вишня|🍒
+құлпынай|клубника|🍓
+өрік|абрикос|🍑
+шабдалы|персик
+банан|банан|🍌
+апельсин|апельсин|🍊
+жаңғақ|орех|🥜
+мейіз|изюм
+қырыққабат|капуста|🥬
+сарымсақ|чеснок|🧄
+жасыл желек|зелень
+саңырауқұлақ|гриб|🍄
+сиыр еті|говядина
+қой еті|баранина
+жылқы еті|конина
+қазы|казы (колбаса из конины)
+піскен|спелый
+шіріген|гнилой
+жүгері|кукуруза|🌽
+асқабақ|тыква|🎃
+бұршақ|горох, фасоль`,
+gram:`<h3>Цена «по»: -дан/-ден</h3>
+<div class="ex">мың теңге<b>ден</b> — по тысяче тенге · сегіз жүз<b>ден</b> — по восемьсот · Келісі қанша<b>дан</b>? — Почём кило?</div>
+<h3>Сравнение</h3>
+<p>С чем сравнивают — в исходном падеже:</p>
+<div class="ex">Қияр қызанақ<b>тан</b> арзан. — Огурцы дешевле помидоров. · Қауын қарбыз<b>дан</b> тәтті. — Дыня слаще арбуза.</div>
+<p>«Чуть больше» — <b>-рақ/-рек, -ырақ/-ірек</b>: арзан<b>ырақ</b>, тәтті<b>рек</b>. «Самый» — <b>ең</b>: ең тәтті жүзім.</p>
+<h3>Попробовать: -ып көру</h3>
+<div class="ex">тат<b>ып көру</b> — попробовать на вкус · ки<b>іп көру</b> — примерить · же<b>п көр</b>! — попробуй!</div>
+<h3>«Давай я»: -айын/-ейін</h3>
+<div class="ex">ал<b>айын</b> — возьму-ка · бер<b>ейін</b> — дам-ка · көр<b>ейін</b> — посмотрю</div>
+<h3>Часть от целого</h3>
+<p>«Попробовать (немного) винограда» — исходный падеж: жүзім<b>нен</b> татып көру.</p>`,
+gx:[['«по тысяче тенге» — мың теңге___',['ден','ге','де'],'Цена «по» — исходный падеж.'],
+['«Огурцы дешевле помидоров.» Қияр қызанақ___ арзан.',['тан','қа','та'],'Сравнение: с чем — исходный падеж.'],
+['«самый сладкий»',['ең тәтті','тәттірек','өте тәттілер'],'Ең — самый.'],
+['«Можно попробовать?»',['Татып көруге бола ма?','Татуға керек пе?','Татып көрдім бе?'],'-ып көру + бола ма.'],
+['«Возьму-ка» — ал___',['айын','амын','дым'],'Намерение: -айын.'],
+['«подешевле» — арзан___',['ырақ','рақ','ірек'],'После согласной, твёрдое слово: -ырақ.']]},
+
+{id:16,lvl:'A2',kk:'Таксиде',ru:'В такси',
+sit:'Анна вызвала такси через приложение и торопится на встречу.',
+dlg:[['Жүргізуші','Сәлеметсіз бе! Анна сіз бе?','Здравствуйте! Вы Анна?'],['Анна','Иә, менмін. Абай даңғылы, жиырма бесінші үйге барамыз.','Да, я. Едем на проспект Абая, дом двадцать пять.'],['Жүргізуші','Жақсы. Белдікті тағыңызшы.','Хорошо. Пристегнитесь, пожалуйста.'],['Анна','Қанша уақыт жүреміз?','Сколько времени ехать?'],['Жүргізуші','Қазір кептеліс. Шамамен жарты сағат.','Сейчас пробка. Примерно полчаса.'],['Анна','Мен асығып жатырмын. Басқа жолмен баруға бола ма?','Я тороплюсь. Можно поехать другой дорогой?'],['Жүргізуші','Болады, Сәтпаев көшесімен барайық.','Можно, поедем по улице Сатпаева.'],['Анна','Мына жерде оңға бұрылыңыз. Осы жерде тоқтаңызшы.','Здесь поверните направо. Остановитесь, пожалуйста, здесь.'],['Жүргізуші','Келдік. Екі мың теңге.','Приехали. Две тысячи тенге.'],['Анна','Каспи арқылы аударсам бола ма?','Можно перевести через Kaspi?'],['Жүргізуші','Иә, нөмірім осы.','Да, вот мой номер.'],['Анна','Рахмет! Сау болыңыз!','Спасибо! До свидания!']],
+ph:[['Мен келе жатырмын.','Я уже еду.'],['Терезені ашсам бола ма?','Можно открыть окно?'],['Кондиционерді қосыңызшы.','Включите, пожалуйста, кондиционер.'],['Мен кешігіп жатырмын.','Я опаздываю.']],
+use:'Такси, каршеринг, попутка. Назвать адрес, попросить остановить, расплатиться переводом.',
+words:`такси|такси|🚕
+көлік|машина, транспорт|🚙|t
+шақыру|вызывать; приглашать|📲
+даңғыл|проспект
+мекенжай|адрес|📍|t
+кептеліс|пробка|🚧
+бағдаршам|светофор|🚦
+қиылыс|перекрёсток
+асығу|торопиться|⏱️|t
+тоқтау|останавливаться|🛑
+белдік|ремень
+уақыт|время|⌛
+басқа|другой
+арқылы|через
+аудару|переводить (деньги)|💸
+жылдам|быстро|⚡
+кешігу|опаздывать
+қосу|включать
+өшіру|выключать
+жаяу жүргінші|пешеход|🚶‍♀️
+жаяу жүргінші өткелі|пешеходный переход
+тротуар|тротуар
+бұрылыс|поворот
+тұрақ|парковка|🅿️
+жанармай|бензин, топливо|⛽
+жүргізуші куәлігі|водительские права
+айыппұл|штраф
+жылдамдық|скорость
+апат|авария
+бос орын|свободное место
+артқы орындық|заднее сиденье
+жүксалғыш|багажник
+қозғалыс|движение
+рөл|руль
+дөңгелек|колесо
+қауіпсіз|безопасный
+қауіпті|опасный|⚠️`,
+gram:`<h3>Прямо сейчас: -ып жатыр</h3>
+<p>Действие в процессе, «как раз сейчас»:</p>
+<div class="tbl"><table><tr><th></th><th>асығу — торопиться</th><th>келу — ехать сюда</th></tr>
+<tr><td>мен</td><td>асығып жатыр<span class="sfx">мын</span></td><td>келе жатыр<span class="sfx">мын</span></td></tr>
+<tr><td>сен</td><td>асығып жатыр<span class="sfx">сың</span></td><td>келе жатыр<span class="sfx">сың</span></td></tr>
+<tr><td>сіз</td><td>асығып жатыр<span class="sfx">сыз</span></td><td>келе жатыр<span class="sfx">сыз</span></td></tr>
+<tr><td>ол</td><td>асығып жатыр</td><td>келе жатыр</td></tr></table></div>
+<div class="ex">Не істеп жатырсың? — Что ты (сейчас) делаешь? · Мен келе жатырмын! — Я уже еду!</div>
+<p>С бару и келу используется форма на <b>-а/-е</b>: бара жатырмын, келе жатырмын.</p>
+<h3>Как читать адрес</h3>
+<div class="ex">Абай даңғылы, 25-үй, 12-пәтер → Абай даңғылы, жиырма бесінші үй, он екінші пәтер</div>
+<p>Название улицы — с окончанием «его»: Сәтпаев көше<b>сі</b>. Падежи — со вставкой н: көшесі<b>нде</b> — на улице, көшесі<b>не</b> — на улицу, көшесі<b>мен</b> — по улице.</p>
+<h3>«Можно я…?»: -сам бола ма</h3>
+<div class="ex">аудар<b>сам бола ма</b>? — можно я переведу? · терезені аш<b>сам бола ма</b>? — можно открыть окно?</div>
+<h3>Через: арқылы</h3>
+<p>Каспи <b>арқылы</b> — через Kaspi · телефон арқылы — по телефону.</p>`,
+gx:[['«Я уже еду (в пути).»',['Келе жатырмын.','Келдім.','Келемін бе?'],'Процесс сейчас: -а/-е жатыр.'],
+['«Что ты сейчас делаешь?»',['Не істеп жатырсың?','Не істедің?','Не істейсіз бе?'],'-ып жатыр — сейчас.'],
+['«на улице Абая» — Абай көшесі___',['нде','де','нің'],'После -сі — вставка н: көшесінде.'],
+['«Можно я открою окно?» Терезені аш___ бола ма?',['сам','у','ты'],'Можно я…? — -сам бола ма.'],
+['«Остановитесь здесь.»',['Осы жерде тоқтаңыз.','Осы жерге тоқтадым.','Осы жерде тоқтайсыз ба?'],'Вежливое повеление: -ңыз.'],
+['«через Kaspi» — Каспи ___',['арқылы','дейін','бері'],'арқылы — через.']]},
+
+{id:17,lvl:'A2',kk:'Банкте',ru:'Банк, обмен, документы',
+sit:'Анна меняет доллары и узнаёт, как открыть банковскую карту.',
+dlg:[['Қызметкер','Сәлеметсіз бе! Келесі! Сізге қандай көмек керек?','Здравствуйте! Следующий! Чем вам помочь?'],['Анна','Сәлеметсіз бе! Мен доллар айырбастағым келеді.','Здравствуйте! Я хочу поменять доллары.'],['Қызметкер','Қанша доллар?','Сколько долларов?'],['Анна','Үш жүз доллар. Бүгінгі бағам қандай?','Триста долларов. Какой сегодня курс?'],['Қызметкер','Бір доллар — бес жүз он теңге. Құжатыңызды көрсетіңізші.','Один доллар — пятьсот десять тенге. Покажите, пожалуйста, ваш документ.'],['Анна','Міне, паспортым.','Вот мой паспорт.'],['Қызметкер','Мұнда қол қойыңыз. Міне, ақшаңыз — бір жүз елу үш мың теңге.','Распишитесь здесь. Вот ваши деньги — сто пятьдесят три тысячи тенге.'],['Анна','Рахмет. Тағы бір сұрақ: банк картасын ашсам бола ма?','Спасибо. Ещё вопрос: можно открыть банковскую карту?'],['Қызметкер','Иә, бірақ ЖСН керек. Сізде ЖСН бар ма?','Да, но нужен ИИН. У вас есть ИИН?'],['Анна','Жоқ, әлі жоқ. ЖСН-ді қайдан алуға болады?','Нет, пока нет. Где можно получить ИИН?'],['Қызметкер','ХҚКО-да алуға болады. Қағаздарды толтырып, қайта келіңіз.','Можно получить в ЦОНе. Заполните бумаги и приходите снова.']],
+ph:[['Банкомат қайда?','Где банкомат?'],['Картам бұғатталып қалды.','Моя карта заблокирована.'],['Сәлемдеме жібергім келеді.','Я хочу отправить посылку.'],['Қай терезеге бару керек?','К какому окошку подойти?']],
+use:'Обменник, банк, ЦОН, почта. ЖСН — ИИН, индивидуальный номер; ХҚКО — ЦОН, центр обслуживания населения.',
+words:`айырбастау|обменивать|💱|t
+бағам|курс (валюты)
+доллар|доллар|💲
+құжат|документ|📄|t
+паспорт|паспорт|🛂
+қол қою|расписываться|✍️
+сұрақ|вопрос|❓
+жауап|ответ
+банк картасы|банковская карта|💳
+ашу|открывать
+жабу|закрывать
+толтыру|заполнять|📝|t
+қағаз|бумага|📃
+пошта|почта|📮
+сәлемдеме|посылка|📦
+хат|письмо|✉️
+жіберу|отправлять
+кезек|очередь
+келесі|следующий
+әлі|ещё, пока
+қайта|снова
+банкомат|банкомат|🏧
+төлеу|платить
+шот|счёт (в банке)
+қолма-қол ақша|наличные
+тиын|тиын (монета)
+шетел валютасы|иностранная валюта
+еуро|евро|💶
+рубль|рубль
+пайыз|процент
+несие|кредит
+қарыз|долг
+жинақ|сбережения
+аударым|денежный перевод
+түбіртек|квитанция
+пошта индексі|почтовый индекс
+конверт|конверт
+марка|марка
+өтініш|заявление
+жеке куәлік|удостоверение личности|🪪
+мерзім|срок`,
+gram:`<h3>Цепочка действий: -ып/-іп</h3>
+<p>Первое действие ставится в форму на <b>-ып/-іп</b> (после гласной <b>-п</b>), последнее — в нужное время:</p>
+<div class="ex">Қағаздарды толтыр<b>ып</b>, қайта келіңіз. — Заполните бумаги и приходите снова. · Бар<b>ып</b> келемін. — Схожу (и вернусь).</div>
+<h3>Сегодняшний, здешний: -ғы/-гі, -дағы/-дегі</h3>
+<div class="ex">бүгін<b>гі</b> бағам — сегодняшний курс · ертең<b>гі</b> — завтрашний · Алматы<b>дағы</b> банк — банк в Алматы</div>
+<h3>Ещё, уже</h3>
+<p><b>әлі</b> — ещё, пока: <i>әлі жоқ</i> — ещё нет. <b>енді</b> — теперь, уже. <b>тағы</b> — ещё (раз, одно).</p>
+<h3>Винительный с «моим, вашим»</h3>
+<div class="ex">құжатыңыз<b>ды</b> көрсетіңіз — покажите ваш документ · паспортым<b>ды</b> ұмыттым — я забыл(а) паспорт</div>`,
+gx:[['«Заполните и приходите.» Толтыр___, келіңіз.',['ып','ды','са'],'Цепочка действий: -ып.'],
+['«сегодняшний курс»',['бүгінгі бағам','бүгін бағам','бүгінде бағам'],'-гі делает прилагательное: бүгінгі.'],
+['«Ещё нет.»',['Әлі жоқ.','Енді жоқ.','Тағы жоқ.'],'әлі — ещё, пока.'],
+['«Покажите ваш документ.» Құжатыңыз___ көрсетіңізші.',['ды','ны','ты'],'Определённый объект; после «з» — -ды.'],
+['«Я хочу поменять доллары.»',['Мен доллар айырбастағым келеді.','Мен доллар айырбастаймын келеді.','Маған доллар айырбастау келеді.'],'-ғым келеді — хочу.'],
+['«банк в Алматы» — Алматы___ банк',['дағы','да','дан'],'-дағы — «который находится в».']]},
+
+{id:18,lvl:'A2',kk:'Қонақта',ru:'В гостях',
+sit:'Ерлан пригласил Анну в гости. Его мама, Сәуле апай, накрыла дастархан.',
+dlg:[['Ерлан','Анна, кел, төрге шық! Танысып қой, бұл менің анам — Сәуле апай.','Анна, проходи на почётное место! Знакомься, это моя мама — Сауле апай.'],['Анна','Сәлеметсіз бе, Сәуле апай! Мына сыйлық сізге.','Здравствуйте, Сауле апай! Вот подарок вам.'],['Сәуле апай','Рахмет, қызым! Неге әуре болдың? Отыр, шай іш.','Спасибо, дочка! Зачем беспокоилась? Садись, пей чай.'],['Анна','Дастарханыңыз қандай мол!','Какой у вас щедрый стол!'],['Сәуле апай','Мына бауырсақтан ал. Бешбармақ та дайын.','Бери баурсаки. И бешбармак готов.'],['Анна','Рахмет, өте дәмді! Бауырсақты өзіңіз пісірдіңіз бе?','Спасибо, очень вкусно! Вы сами пекли баурсаки?'],['Сәуле апай','Иә, өзім пісірдім. Тағы шай құяйын ба?','Да, сама пекла. Налить ещё чаю?'],['Анна','Иә, рахмет, аздап құйыңызшы.','Да, спасибо, налейте немножко.'],['Анна','Рахмет, тойдым. Енді маған кетуге уақыт болды.','Спасибо, я наелась. Мне уже пора идти.'],['Сәуле апай','Тағы келіп тұр, қызым! Жолың болсын!','Приходи ещё, дочка! Счастливого пути!'],['Анна','Рахмет! Дастарханыңыз мол болсын!','Спасибо! Пусть ваш стол всегда будет щедрым!']],
+ph:[['Туған күніңізбен құттықтаймын!','Поздравляю с днём рождения!'],['Құтты болсын!','Поздравляю! (с покупкой, событием)'],['Денсаулығыңыз мықты болсын!','Крепкого вам здоровья!'],['Ас болсын!','Приятного аппетита!']],
+use:'Гости, праздники, дни рождения, тосты. Уходя, хозяевам говорят «Дастарханыңыз мол болсын!»',
+words:`қонақ|гость|🧑‍🤝‍🧑|t
+дастархан|накрытый стол, угощение
+сыйлық|подарок|🎁|t
+төр|почётное место
+бауырсақ|баурсак|🍩
+бешбармақ|бешбармак
+қымыз|кумыс
+құю|наливать|🫖
+пісіру|печь; готовить
+дайын|готовый
+тою|наедаться
+мол|щедрый, обильный
+той|праздник, торжество|🎉
+мереке|праздник|🎊
+туған күн|день рождения|🎂|t
+құттықтау|поздравлять
+тілек|пожелание|🌟
+апай|апай (к женщине старше)
+әуре болу|хлопотать, беспокоиться
+шақыру қағазы|приглашение|💌
+қонақжай|гостеприимный
+дәстүр|традиция
+салт|обычай
+табақ|большое блюдо
+сыйлау|угощать; уважать
+құрмет|уважение
+бата|благословение
+алғыс|благодарность
+алғыс айту|благодарить
+үйлену тойы|свадьба|💒
+Жаңа жыл|Новый год|🎄
+Наурыз мерекесі|праздник Наурыз
+шашу|шашу (осыпание сладостями)
+қуанту|радовать
+көңілді|весёлый
+бақыт|счастье
+бақытты|счастливый
+мықты|крепкий
+ата-баба|предки
+ұрпақ|потомки`,
+gram:`<h3>Пусть будет: -сын/-сін</h3>
+<p>Повеление для 3-го лица — основа многих пожеланий:</p>
+<div class="ex">Ас бол<b>сын</b>! — Приятного аппетита! · Жолың бол<b>сын</b>! — Счастливого пути! · Құтты бол<b>сын</b>! — Поздравляю! · Денсаулығыңыз мықты бол<b>сын</b>! — Крепкого здоровья!</div>
+<h3>Поздравляю с …: -мен құттықтаймын</h3>
+<div class="ex">Туған күніңіз<b>бен</b> құттықтаймын! — С днём рождения! · Жаңа жыл<b>мен</b>! — С Новым годом!</div>
+<h3>Предложить: -айын ба?</h3>
+<div class="ex">Шай құ<b>яйын ба</b>? — Налить чаю? · Терезені аш<b>айын ба</b>? — Открыть окно?</div>
+<h3>Сам: өзім, өзің, өзіңіз</h3>
+<div class="ex">Өзім пісірдім. — Сама испекла. · Өзіңіз қалайсыз? — А вы сами как?</div>
+<h3>Этикет за дастарханом</h3>
+<p>Обувь снимают у входа. Гостю и старшим предлагают <b>төр</b> — почётное место напротив входа. Чай наливают понемногу: полная пиала намекает, что пора уходить. Отказываться от угощения невежливо — хотя бы попробуйте.</p>`,
+gx:[['«Приятного аппетита!»',['Ас болсын!','Жолың болсын!','Құтты болсын!'],'Ас — еда.'],
+['«С днём рождения!» Туған күніңіз___ құттықтаймын!',['бен','ге','де'],'Поздравляю с — творительный падеж.'],
+['«Налить чаю?» Шай құ___ ба?',['яйын','йды','ыңыз'],'Предложение «я сделаю?» — -айын ба.'],
+['«Я сама испекла.»',['Өзім пісірдім.','Өзің пісірдім.','Мен өзі пісірдім.'],'Өзім — я сам(а).'],
+['«Возьми баурсаков (немного).» Бауырсақ___ ал.',['тан','қа','ты'],'«Немного из» — исходный падеж.'],
+['«Счастливого пути!» (на «ты»)',['Жолың болсын!','Жолыңыз болды!','Жол болсын ба?'],'Пусть будет: болсын.']]},
+
+{id:19,lvl:'A2',kk:'Бос уақыт',ru:'Хобби и свободное время',
+sit:'Ерлан и Анна обсуждают, кто чем увлекается после работы.',
+dlg:[['Ерлан','Анна, бос уақытта немен айналысасыз?','Анна, чем вы занимаетесь в свободное время?'],['Анна','Мен сурет салуды жақсы көремін. Сонымен қатар жүземін.','Я люблю рисовать. А ещё плаваю.'],['Ерлан','Керемет! Мен футбол ойнаймын, аптасына екі рет.','Здорово! Я играю в футбол, два раза в неделю.'],['Анна','Сіз домбыра тарта аласыз ба?','Вы умеете играть на домбре?'],['Ерлан','Иә, аздап тарта аламын. Әкем үйретті.','Да, немного умею. Папа научил.'],['Анна','Мен де үйренгім келеді. Қиын ба?','Я тоже хочу научиться. Трудно?'],['Ерлан','Басында қиын, кейін оңай. Сабақ беруге дайынмын!','Сначала трудно, потом легко. Готов дать урок!'],['Анна','Рахмет! Ал мен сізге сурет салуды үйретемін.','Спасибо! А я научу вас рисовать.'],['Ерлан','Жоқ, мен сурет сала алмаймын, қолымнан келмейді!','Нет, я не умею рисовать, у меня не получается!'],['Анна','Бәрі үйренеді. Байқап көріңіз!','Все учатся. Попробуйте!']],
+ph:[['Сенің хоббиің қандай?','Какое у тебя хобби?'],['Маған музыка ұнайды.','Мне нравится музыка.'],['Бірге ойнайық!','Давай поиграем вместе!']],
+use:'Знакомство поближе, разговор с коллегами, запись в секцию или на курсы.',
+words:`бос уақыт|свободное время||t
+хобби|хобби
+айналысу|заниматься
+спорт|спорт|🏋️
+футбол|футбол|⚽
+ойнау|играть|🎮|t
+жүзу|плавать|🏊
+жүгіру|бегать|🏃
+сурет|рисунок; фотография|🖼️
+сурет салу|рисовать|🖌️|t
+ән|песня|🎵
+ән айту|петь|🎤
+билеу|танцевать|💃
+музыка|музыка|🎶
+домбыра|домбра|🪕
+тарту|играть (на струнных)
+саяхат|путешествие|🗺️
+жақсы көру|любить|😍
+үйрету|учить (кого-то)
+байқап көру|попробовать
+басында|сначала
+кейін|потом, позже
+ешқашан|никогда
+шахмат|шахматы|♟️
+тоғызқұмалақ|тогызкумалак (настольная игра)
+волейбол|волейбол|🏐
+баскетбол|баскетбол|🏀
+бокс|бокс|🥊
+күрес|борьба
+жаттығу|тренировка, упражнение
+жарыс|соревнование
+жеңу|побеждать|🏆
+жеңілу|проигрывать
+топ|команда; группа
+спортзал|спортзал
+атқа міну|ездить верхом
+балық аулау|рыбалка|🎣
+тау шаңғысы|горные лыжи|⛷️
+конькимен сырғанау|кататься на коньках|⛸️
+бақша|сад, огород
+гитара|гитара|🎸
+фотосурет|фотография|📷
+концерт|концерт
+көрме|выставка
+көңіл көтеру|развлекаться
+ойыншық|игрушка|🧸`,
+gram:`<h3>Умею, могу: -а аламын</h3>
+<p>Основа + <b>-а/-е/-й</b> + <b>аламын</b>:</p>
+<div class="ex">жүз<b>е аламын</b> — умею плавать · тарт<b>а аласыз ба</b>? — умеете играть? · сөйле<b>й аламын</b> — могу говорить</div>
+<p>Не умею: <b>-а алмаймын</b>: сал<b>а алмаймын</b> — не умею рисовать. «Не получается» — <i>қолымнан келмейді</i>.</p>
+<h3>Люблю делать: -уды жақсы көремін</h3>
+<div class="ex">оқу<b>ды</b> жақсы көремін — люблю читать · сурет салу<b>ды</b> — рисовать · музыка<b>ны</b> жақсы көремін — люблю музыку</div>
+<h3>Учиться и учить</h3>
+<p><b>үйрену</b> — учиться самому, <b>үйрету</b> — учить кого-то: <i>Мен домбыра тартуды үйренемін. Әкем маған үйретті.</i></p>
+<h3>Как часто</h3>
+<p><b>күнде</b> — каждый день, <b>аптасына екі рет</b> — дважды в неделю, <b>кейде</b> — иногда, <b>ешқашан</b> + отрицание — никогда: <i>Мен ешқашан билемеймін.</i></p>`,
+gx:[['«Я умею плавать.»',['Мен жүзе аламын.','Мен жүзу аламын.','Мен жүземін алам.'],'-а/-е + аламын.'],
+['«Я не умею рисовать.» Мен сурет сала ___',['алмаймын','аламын','жоқпын'],'Не умею: -а алмаймын.'],
+['«Я люблю читать.» Мен оқу___ жақсы көремін.',['ды','ға','да'],'-у + винительный: оқуды.'],
+['«Папа меня научил.» Әкем маған ___',['үйретті','үйренді','үйрен'],'Учить кого-то — үйрету.'],
+['«два раза в неделю»',['аптасына екі рет','аптада екі','екі апта рет'],'аптасына — в неделю.'],
+['«Я никогда не танцую.»',['Мен ешқашан билемеймін.','Мен ешқашан билеймін.','Мен әрқашан билемеймін.'],'ешқашан + отрицание.']]},
+
+{id:20,lvl:'A2',kk:'Жоспарлар',ru:'Планы и звонки',
+sit:'Анна звонит Айгерім и зовёт её съездить вместе в Астану.',
+dlg:[['Анна','Алло, Айгерім, сәлем! Қолың бос па?','Алло, Айгерім, привет! Ты свободна?'],['Айгерім','Сәлем, Анна! Иә, тыңдап тұрмын.','Привет, Анна! Да, слушаю.'],['Анна','Келесі аптада Астанаға бармақпын. Сен бірге бармайсың ба?','На следующей неделе собираюсь в Астану. Не поедешь со мной?'],['Айгерім','Қашан? Жұмада жиналысым бар.','Когда? В пятницу у меня совещание.'],['Анна','Сенбіде барып, жексенбіде қайтамыз.','Поедем в субботу, вернёмся в воскресенье.'],['Айгерім','Онда барамын! Пойызбен бе, ұшақпен бе?','Тогда поеду! На поезде или на самолёте?'],['Анна','Ұшақпен. Билеттерді бүгін кешке сатып алмақшымын.','На самолёте. Сегодня вечером собираюсь купить билеты.'],['Айгерім','Жақсы. Егер билет қымбат болса, пойызбен барайық.','Хорошо. Если билеты дорогие, поедем на поезде.'],['Анна','Келістік. Билет алған соң, саған хабарласамын.','Договорились. Как куплю билеты, позвоню тебе.'],['Айгерім','Жарайды, күтемін. Сау бол!','Ладно, жду. Пока!']],
+ph:[['Кейін хабарласамын.','Перезвоню позже.'],['Кім сұрап тұр?','Кто спрашивает?'],['Қате нөмір.','Неправильный номер.'],['Маған хабарлама жазыңыз.','Напишите мне сообщение.']],
+use:'Телефонные звонки, сообщения, планы на поездку, перенос встречи.',
+words:`телефон|телефон|📱
+қоңырау шалу|звонить|📞|t
+хабарласу|связываться
+тыңдау|слушать|🎧
+жоспар|план|🗓️|t
+жиналыс|совещание
+пойыз|поезд|🚆
+ұшақ|самолёт|✈️|t
+әуежай|аэропорт|🛫
+қайту|возвращаться|↩️
+күту|ждать|⏳
+сатып алу|покупать|🛒
+егер|если
+мүмкін|возможно
+хабарлама|сообщение|💬
+бос емеспін|я занят(а)
+келесі апта|следующая неделя
+қоңырау|звонок
+смартфон|смартфон
+зарядтау|заряжать|🔋
+байланыс|связь
+интернет|интернет|🌐
+ғаламтор|интернет (каз. слово)
+электрондық пошта|электронная почта|📧
+әлеуметтік желі|соцсеть
+сілтеме|ссылка|🔗
+жүктеу|скачивать
+қабылдау|принимать
+жауап беру|отвечать
+уәде|обещание
+уәде беру|обещать
+кейінге қалдыру|откладывать, переносить
+болдырмау|отменять
+шешім|решение
+ойлау|думать|🤔
+келісу|соглашаться
+бас тарту|отказываться
+жоспарлау|планировать
+міндетті түрде|обязательно
+бәлкім|может быть
+әлбетте|конечно`,
+gram:`<h3>Собираюсь: -мақпын, -мақшымын</h3>
+<div class="ex">бар<b>мақпын</b> — собираюсь поехать · сатып ал<b>мақшымын</b> — собираюсь купить · іш<b>пекпін</b> — собираюсь выпить · жаз<b>бақпын</b> — собираюсь написать</div>
+<p><b>-мақ/-мек</b> после гласных и р, л, й, у; <b>-бақ/-бек</b> после м, н, ң, з, ж; <b>-пақ/-пек</b> после глухих.</p>
+<h3>Если: -са/-се</h3>
+<div class="ex">Егер билет қымбат бол<b>са</b>, пойызбен барайық. — Если билеты дорогие, поедем на поезде.</div>
+<div class="ex">Уақытым бол<b>са</b>, келемін. — Если будет время, приду. · бар<b>сам</b>, бар<b>саң</b>, бар<b>саңыз</b>, бар<b>са</b>, бар<b>сақ</b></div>
+<h3>После: -ған соң, -дан кейін</h3>
+<div class="ex">билет ал<b>ған соң</b> — после того как куплю билет · жұмыс<b>тан кейін</b> — после работы</div>
+<h3>Телефонные фразы</h3>
+<p>Алло! · Тыңдап тұрмын. — Слушаю. · Кім сұрап тұр? — Кто спрашивает? · Кейін хабарласамын. — Перезвоню.</p>`,
+gx:[['«Я собираюсь поехать.» Бар___',['мақпын','амын','дым'],'Намерение: -мақпын.'],
+['«Если будет время, приду.» Уақытым бол___, келемін.',['са','ды','ып'],'Условие: -са.'],
+['«после работы»',['жұмыстан кейін','жұмысқа кейін','жұмыста соң'],'Исходный падеж + кейін.'],
+['«на самолёте» — ұшақ___',['пен','қа','та'],'Чем? — творительный -пен.'],
+['«Я занят(а).»',['Бос емеспін.','Бос жоқпын.','Бос емес.'],'«Не являюсь свободным» — емеспін.'],
+['«Я собираюсь выпить» — іш___',['пекпін','мекпін','бекпін'],'После глухого «ш» — -пек.']]},
+
+{id:21,lvl:'A2',kk:'Қонақүйде',ru:'В гостинице',
+sit:'Анна приехала в Астану и заселяется в гостиницу.',
+dlg:[['Анна','Сәлеметсіз бе! Мен бөлме брондағанмын. Атым — Анна Иванова.','Здравствуйте! Я бронировала номер. Меня зовут Анна Иванова.'],['Әкімші','Қош келдіңіз! Иә, бір адамдық бөлме, екі түнге. Паспортыңызды беріңізші.','Добро пожаловать! Да, одноместный номер на две ночи. Дайте, пожалуйста, ваш паспорт.'],['Анна','Міне. Таңғы ас кіре ме?','Вот. Завтрак включён?'],['Әкімші','Иә, таңғы ас сағат жетіден онға дейін, бірінші қабатта.','Да, завтрак с семи до десяти, на первом этаже.'],['Анна','Интернеттің құпиясөзі қандай?','Какой пароль от интернета?'],['Әкімші','Құпиясөз кілт картасында жазылған. Сіздің бөлмеңіз — үш жүз он екі.','Пароль написан на карте-ключе. Ваш номер — триста двенадцать.'],['Анна','Бөлмеден шығу сағат нешеде?','Во сколько выезд из номера?'],['Әкімші','Сағат он екіде. Жүгіңізді сақтап қоюға болады.','В двенадцать. Багаж можно оставить на хранение.'],['Анна','Кешіріңіз, бөлмеде кондиционер жұмыс істемейді.','Извините, в номере не работает кондиционер.'],['Әкімші','Кешіріңіз! Қазір шебер жібереміз.','Простите! Сейчас пришлём мастера.'],['Анна','Рахмет, сіз өте мейірімдісіз!','Спасибо, вы очень любезны!']],
+ph:[['Сіз Түркістанда болғансыз ба?','Вы бывали в Туркестане?'],['Сүлгіні ауыстырыңызшы.','Поменяйте, пожалуйста, полотенце.'],['Бөлмені тазалаңызшы.','Уберите, пожалуйста, номер.'],['Такси шақырып беріңізші.','Вызовите, пожалуйста, такси.']],
+use:'Гостиница, хостел, квартира посуточно; жалобы и просьбы на ресепшене.',
+words:`қонақүй|гостиница|🏨|t
+брондау|бронировать
+әкімші|администратор
+таңғы ас|завтрак|🥐|t
+түскі ас|обед
+кешкі ас|ужин
+түн|ночь
+құпиясөз|пароль|🔒
+жүк|багаж, груз|🧳
+шығу|выходить; выезжать
+кіру|входить
+шебер|мастер|🔧
+сүлгі|полотенце
+тазалау|убирать|🧹
+мейірімді|добрый, любезный
+бұрын|раньше
+ашылу|открываться||t
+жабылу|закрываться
+сақтау|хранить
+тіркелу|регистрироваться, заселяться
+бөлмеден шығу|выезд из номера
+жатақхана|общежитие, хостел
+екі адамдық|двухместный
+люкс|люкс
+көрініс|вид (из окна)
+жастық|подушка
+көрпе|одеяло
+төсек жаймасы|постельное бельё
+шампунь|шампунь
+фен|фен
+сейф|сейф
+қызмет көрсету|обслуживание
+шағым|жалоба
+шағымдану|жаловаться
+шулы|шумный
+тыныш|тихий
+ыңғайлы|удобный
+жайлы|уютный`,
+gram:`<h3>Опыт и результат: -ған</h3>
+<p>Форма на <b>-ған/-ген</b> (после глухих <b>-қан/-кен</b>) + лицо означает «делал(а) когда-то, и это важно сейчас»:</p>
+<div class="ex">Мен бөлме бронда<b>ғанмын</b>. — Я (уже) забронировала номер. · Сіз Түркістанда бол<b>ғансыз ба</b>? — Вы бывали в Туркестане?</div>
+<p>Отрицание: <b>-ған жоқпын</b>: <i>Мен Астанада ешқашан болған жоқпын.</i> — Я никогда не была в Астане.</p>
+<h3>Страдательный залог: -ыл/-іл, -л</h3>
+<div class="ex">жаз → жаз<b>ыл</b>ған — написанный · аш → аш<b>ыл</b>ады — открывается · жап → жаб<b>ыл</b>ады — закрывается</div>
+<div class="ex">Дүкен сағат тоғызда ашылады. — Магазин открывается в девять.</div>
+<h3>С … до …</h3>
+<div class="ex">сағат жеті<b>ден</b> он<b>ға дейін</b> — с семи до десяти</div>
+<h3>Приёмы пищи</h3>
+<p><b>таңғы ас</b> — завтрак (таң — рассвет), <b>түскі ас</b> — обед (түс — полдень), <b>кешкі ас</b> — ужин.</p>`,
+gx:[['«Вы бывали в Туркестане?»',['Түркістанда болғансыз ба?','Түркістанда боласыз ба?','Түркістанға болдыңыз ба?'],'Опыт: -ған + лицо.'],
+['«Я никогда не была в Астане.» Мен Астанада ешқашан болған ___',['жоқпын','емеспін','ма'],'Отрицание опыта: -ған жоқпын.'],
+['«Магазин открывается в 9.» Дүкен сағат тоғызда аш___',['ылады','ады','ты'],'Страдательный залог: аш + ыл.'],
+['«с семи до десяти»',['жетіден онға дейін','жетіге онда дейін','жетіде онға'],'с — -ден, до — -ға дейін.'],
+['«завтрак»',['таңғы ас','түскі ас','кешкі ас'],'таң — утро, рассвет.'],
+['«Кондиционер не работает.»',['Кондиционер жұмыс істемейді.','Кондиционер жұмыс емес.','Кондиционер жұмыс жоқ.'],'Отрицание глагола: -мей.']]}
+];
+const GUIDE_PH=[['Иә. Жоқ.','Да / Нет'],['Рахмет! — Оқасы жоқ.','Спасибо! — Не за что.'],['Кешіріңіз.','Извините.'],['Түсінбедім.','Не понял(а).'],['Қайталаңызшы.','Повторите, пожалуйста.'],['Баяу сөйлеңізші.','Медленнее, пожалуйста.'],['Қанша тұрады?','Сколько стоит?'],['… қайда?','Где …?'],['Маған … керек.','Мне нужно …'],['Жолыңыз болсын!','Счастливого пути!'],['Ас болсын!','Приятного аппетита!'],['Сау болыңыз!','До свидания!']];
+
+/* ===================== ILLUSTRATIONS ===================== */
+function mtn(){return '<path d="M0 120 L40 82 L62 98 L104 52 L140 92 L176 64 L214 100 L252 58 L292 96 L320 80 V180 H0Z" fill="var(--mount)"/><path d="M104 52 L91 66 L99 64 L105 70 L111 63 L117 66Z M252 58 L239 72 L247 70 L253 75 L259 69 L266 71Z" fill="var(--snow)"/>'}
+function P(x,y,c,h,s,long){s=s||1;return `<g transform="translate(${x} ${y}) scale(${s})">${long?`<rect x="-15" y="2" width="30" height="28" rx="11" fill="${h}"/>`:''}<rect x="-17" y="24" width="34" height="44" rx="14" fill="${c}"/><circle cx="0" cy="9" r="14" fill="var(--skin)"/><path d="M-14.5 9 A14.5 14.5 0 0 1 14.5 9 Q8 1 0 2 Q-8 1 -14.5 9Z" fill="${h}"/><circle cx="-5" cy="11" r="1.6" fill="var(--ink)"/><circle cx="5" cy="11" r="1.6" fill="var(--ink)"/></g>`}
+function bub(x,y,t){const w=t.length*7.4+22;return `<rect x="${x}" y="${y}" width="${w}" height="28" rx="14" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="${x+w/2}" y="${y+19}" text-anchor="middle" font-size="13" font-weight="700" fill="var(--ink)">${t}</text>`}
+function txt(x,y,t,s,c,w){return `<text x="${x}" y="${y}" font-size="${s}" font-weight="${w||700}" fill="${c||'var(--ink)'}" text-anchor="middle">${t}</text>`}
+function pin(x,y,c){return `<path d="M${x} ${y} c-8 -10 -10 -14 -10 -18 a10 10 0 0 1 20 0 c0 4 -2 8 -10 18z" fill="${c}"/><circle cx="${x}" cy="${y-18}" r="4" fill="var(--surface)"/>`}
+const SC={
+1:()=>`<rect width="320" height="180" fill="var(--sky)"/>${mtn()}<rect y="140" width="320" height="40" fill="var(--ground)"/>${P(118,70,'var(--c1)','var(--hair)',1.1)}${P(206,70,'var(--c3)','var(--hair2)',1.1,true)}${bub(36,18,'Сәлем!')}${bub(168,14,'Сәлеметсіз бе!')}`,
+2:()=>`<rect width="320" height="180" fill="var(--sky)"/><path d="M20 70 Q60 30 120 42 T240 50 Q304 60 300 112 Q290 162 220 152 T100 152 Q26 152 20 112Z" fill="var(--ground)"/><path d="M82 64 Q150 0 236 104" fill="none" stroke="var(--c3)" stroke-width="2.5" stroke-dasharray="6 6"/>${pin(82,72,'var(--c3)')}${pin(236,112,'var(--c1)')}${txt(82,92,'Мәскеу',13)}${txt(236,132,'Алматы',13)}${txt(250,40,'қазақша · орысша',11,'var(--muted)',600)}`,
+3:()=>{let k='';const d=['1','2','3','4','5','6','7','8','9','*','0','#'];d.forEach((n,i)=>{const cx=136+(i%3)*24,cy=70+Math.floor(i/3)*22;k+=`<circle cx="${cx}" cy="${cy}" r="9" fill="var(--accent-soft)"/>${txt(cx,cy+4,n,11)}`});return `<rect width="320" height="180" fill="var(--sky)"/><rect x="118" y="12" width="84" height="158" rx="14" fill="var(--ink)"/><rect x="124" y="24" width="72" height="134" rx="6" fill="var(--surface)"/>${txt(160,46,'8 701 234 56 78',8.5)}${k}${txt(54,70,'25',40,'var(--c2)')}${txt(262,74,'100',34,'var(--c1)')}${txt(66,148,'7',36,'var(--c3)')}${txt(258,150,'1000',28,'var(--c4)')}`},
+4:()=>`<rect width="320" height="180" fill="var(--wall)"/><rect x="34" y="12" width="252" height="156" rx="6" fill="var(--wood)"/><rect x="46" y="24" width="228" height="132" fill="var(--sky)"/><path d="M46 120 L90 82 L130 110 L180 70 L230 106 L274 86 V156 H46Z" fill="var(--mount)"/>${P(92,82,'var(--c4)','var(--grey)',.95)}${P(136,78,'var(--c1)','var(--hair)',1)}${P(181,100,'var(--c2)','var(--hair)',.68)}${P(226,80,'var(--c3)','var(--hair2)',.95,true)}`,
+5:()=>`<rect width="320" height="180" fill="var(--wall)"/><rect x="24" y="18" width="116" height="84" rx="4" fill="var(--sky)" stroke="var(--wood)" stroke-width="5"/><path d="M27 92 L56 60 L76 76 L102 46 L137 86 V99 H27Z" fill="var(--mount)"/>${P(256,62,'var(--c3)','var(--hair2)',1,true)}<rect x="0" y="128" width="320" height="10" fill="var(--wood)"/><rect x="20" y="138" width="8" height="42" fill="var(--wood)"/><rect x="292" y="138" width="8" height="42" fill="var(--wood)"/><rect x="164" y="90" width="64" height="38" rx="3" fill="var(--ink)"/><rect x="168" y="94" width="56" height="30" fill="var(--accent-soft)"/><rect x="154" y="126" width="84" height="5" rx="2" fill="var(--ink)"/><rect x="118" y="108" width="20" height="20" rx="3" fill="var(--c2)"/><path d="M138 112 q8 0 8 6 q0 6 -8 6" fill="none" stroke="var(--c2)" stroke-width="3"/><rect x="58" y="112" width="20" height="16" rx="2" fill="var(--c3)"/><path d="M68 112 q-12 -20 -4 -28 q4 14 4 28 q2 -18 12 -22 q-2 14 -12 22" fill="var(--c4)"/>`,
+6:()=>{let s='';for(let i=0;i<5;i++)s+=`<ellipse cx="${40+i*34}" cy="44" rx="14" ry="8" fill="var(--c2)"/><path d="M${33+i*34} 42 l4 -4 M${40+i*34} 41 l4 -4" stroke="var(--wood)" stroke-width="1.5"/>`;for(let i=0;i<5;i++)s+=`<rect x="${26+i*20}" y="70" width="14" height="26" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><path d="M${26+i*20} 70 l7 -6 l7 6" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><rect x="${26+i*20}" y="80" width="14" height="6" fill="var(--c1)"/>`;let a='';[[136,88],[150,88],[164,88],[143,78],[157,78],[150,68]].forEach(p=>a+=`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="var(--c3)"/>`);return `<rect width="320" height="180" fill="var(--wall)"/>${s}${a}<rect x="16" y="52" width="196" height="5" fill="var(--wood)"/><rect x="16" y="96" width="196" height="5" fill="var(--wood)"/>${P(258,82,'var(--c4)','var(--hair)',1)}<rect x="0" y="128" width="320" height="52" fill="var(--wood)"/><rect x="0" y="128" width="320" height="6" fill="var(--ink)" opacity=".15"/><rect x="176" y="106" width="56" height="26" rx="5" fill="var(--sun)"/>${txt(204,124,'500 ₸',13,'#152A2E')}`},
+7:()=>{let j='';const cs=['var(--c1)','var(--c3)','var(--ink)','var(--grey)','var(--c2)'];[60,112,164,216,268].forEach((x,i)=>{j+=`<path d="M${x} 34 v6 M${x-12} 48 L${x} 40 L${x+12} 48" stroke="var(--ink)" stroke-width="2" fill="none"/><path d="M${x-18} 52 L${x-6} 46 L${x+6} 46 L${x+18} 52 L${x+24} 104 L${x+16} 106 L${x+14} 74 L${x+14} 132 L${x-14} 132 L${x-14} 74 L${x-16} 106 L${x-24} 104Z" fill="${cs[i]}"/><path d="M${x} 48 V132" stroke="var(--wall)" stroke-width="1.5" opacity=".6"/>`});return `<rect width="320" height="180" fill="var(--wall)"/><rect x="24" y="30" width="272" height="5" rx="2" fill="var(--ink)"/>${j}<rect x="0" y="150" width="320" height="30" fill="var(--block)"/><rect x="226" y="112" width="34" height="22" rx="4" fill="var(--surface)" stroke="var(--ink)"/>${txt(243,128,'44',12)}`},
+8:()=>{let w='';for(let i=0;i<5;i++)w+=`<rect x="${44+i*34}" y="88" width="26" height="22" rx="3" fill="var(--sky)"/>`;return `<rect width="320" height="180" fill="var(--sky)"/>${mtn()}<rect y="140" width="320" height="40" fill="var(--road)"/><rect x="30" y="78" width="200" height="62" rx="10" fill="var(--c2)"/>${w}<rect x="208" y="88" width="16" height="44" rx="2" fill="var(--surface)" opacity=".8"/><rect x="30" y="118" width="200" height="6" fill="var(--c3)"/><circle cx="70" cy="142" r="12" fill="var(--ink)"/><circle cx="70" cy="142" r="4" fill="var(--grey)"/><circle cx="190" cy="142" r="12" fill="var(--ink)"/><circle cx="190" cy="142" r="4" fill="var(--grey)"/><rect x="274" y="80" width="4" height="64" fill="var(--ink)"/><rect x="240" y="30" width="72" height="54" rx="6" fill="var(--ink)"/>${txt(276,48,'ТАЛДЫҚОРҒАН',7.5,'var(--sun)')}${txt(276,72,'10:00',17,'var(--sun)')}`},
+9:()=>`<rect width="320" height="180" fill="var(--wall)"/><path d="M160 0 V22" stroke="var(--ink)" stroke-width="2"/><path d="M138 40 a22 20 0 0 1 44 0Z" fill="var(--c1)"/><rect x="40" y="122" width="240" height="10" rx="3" fill="var(--wood)"/><rect x="60" y="132" width="8" height="48" fill="var(--wood)"/><rect x="252" y="132" width="8" height="48" fill="var(--wood)"/><rect x="58" y="74" width="34" height="48" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/>${txt(75,92,'МӘЗІР',7)}<path d="M64 100 h22 M64 106 h18 M64 112 h20" stroke="var(--muted)" stroke-width="1.5"/><ellipse cx="140" cy="118" rx="36" ry="8" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><ellipse cx="140" cy="111" rx="24" ry="9" fill="var(--c2)"/><circle cx="132" cy="108" r="2" fill="var(--c3)"/><circle cx="145" cy="106" r="2" fill="var(--c3)"/><circle cx="150" cy="112" r="2" fill="var(--c3)"/><ellipse cx="218" cy="104" rx="20" ry="16" fill="var(--c1)"/><rect x="210" y="84" width="16" height="6" rx="3" fill="var(--c1)"/><path d="M236 100 q14 -2 16 -14" stroke="var(--c1)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M198 98 q-10 4 0 14" stroke="var(--c1)" stroke-width="4" fill="none"/><path d="M252 112 h20 l-3 10 h-14z" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><path d="M178 112 h20 l-3 10 h-14z" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/>`,
+10:()=>`<rect width="320" height="180" fill="var(--ground)"/><rect x="0" y="98" width="320" height="28" fill="var(--road)"/><rect x="150" y="0" width="28" height="180" fill="var(--road)"/><path d="M0 112 H320 M164 0 V180" stroke="var(--surface)" stroke-width="2" stroke-dasharray="8 8"/><rect x="14" y="20" width="66" height="64" rx="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><rect x="40" y="32" width="14" height="38" fill="var(--ok)"/><rect x="28" y="44" width="38" height="14" fill="var(--ok)"/>${txt(47,80,'ДӘРІХАНА',7)}<rect x="86" y="20" width="56" height="64" rx="4" fill="var(--block)" stroke="var(--ink)" stroke-width="1.2"/>${txt(114,58,'БАНК',11)}<rect x="188" y="20" width="118" height="64" rx="4" fill="var(--block)" stroke="var(--ink)" stroke-width="1.2"/>${txt(247,58,'ДҮКЕН',12)}<rect x="14" y="138" width="128" height="36" rx="4" fill="var(--block)"/><rect x="188" y="138" width="118" height="36" rx="4" fill="var(--block)"/><path d="M164 168 V112 H96" fill="none" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/><path d="M106 104 L94 112 L106 120" fill="none" stroke="var(--gold)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="164" cy="168" r="7" fill="var(--c3)"/>`,
+11:()=>{const d=['Дс','Сс','Ср','Бс','Жм','Сб','Жс'];let c='';d.forEach((t,i)=>{const x=46+i*26;c+=txt(x,74,t,9,i>4?'var(--c3)':'var(--muted)');for(let r=0;r<3;r++)c+=`<rect x="${x-10}" y="${84+r*22}" width="20" height="16" rx="3" fill="${i>4?'var(--gold-soft)':'var(--surface2)'}"/>`});return `<rect width="320" height="180" fill="var(--sky)"/><path d="M220 180 L262 118 L290 150 L304 132 L320 150 V180Z" fill="var(--mount)"/><path d="M262 118 L253 131 L261 129 L266 134Z" fill="var(--snow)"/><rect x="26" y="30" width="190" height="136" rx="8" fill="var(--surface)" stroke="var(--line)"/><rect x="26" y="30" width="190" height="28" rx="8" fill="var(--c3)"/><rect x="26" y="48" width="190" height="10" fill="var(--c3)"/>${txt(121,49,'АПТА',12,'#FFFFFF')}${c}<circle cx="268" cy="50" r="20" fill="var(--sun)"/>`},
+12:()=>`<rect width="320" height="180" fill="var(--wall)"/><rect y="150" width="320" height="30" fill="var(--wood)"/><rect x="196" y="24" width="96" height="74" rx="3" fill="var(--sky)" stroke="var(--surface)" stroke-width="5"/><path d="M199 88 L224 62 L242 76 L262 52 L289 84 V95 H199Z" fill="var(--mount)"/><path d="M244 24 V98 M196 61 H292" stroke="var(--surface)" stroke-width="4"/><rect x="46" y="30" width="62" height="44" rx="2" fill="var(--gold-soft)" stroke="var(--gold)" stroke-width="3"/><circle cx="66" cy="50" r="7" fill="var(--sun)"/><path d="M50 70 L70 56 L84 64 L104 50 V70Z" fill="var(--c4)"/><rect x="26" y="96" width="140" height="30" rx="10" fill="var(--c1)" opacity=".75"/><rect x="26" y="112" width="140" height="34" rx="10" fill="var(--c1)"/><rect x="18" y="104" width="18" height="42" rx="8" fill="var(--c1)"/><rect x="156" y="104" width="18" height="42" rx="8" fill="var(--c1)"/><rect x="34" y="146" width="6" height="8" fill="var(--ink)"/><rect x="152" y="146" width="6" height="8" fill="var(--ink)"/><path d="M200 152 V108" stroke="var(--ink)" stroke-width="3"/><path d="M186 108 L214 108 L208 88 L192 88Z" fill="var(--sun)"/><circle cx="264" cy="124" r="11" fill="none" stroke="var(--gold)" stroke-width="4"/><path d="M275 124 H300 M292 124 V132 M298 124 V130" stroke="var(--gold)" stroke-width="4" stroke-linecap="round"/>`,
+13:()=>`<rect width="320" height="180" fill="var(--wall)"/><circle cx="66" cy="56" r="30" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/><rect x="58" y="36" width="16" height="40" rx="2" fill="var(--c3)"/><rect x="46" y="48" width="40" height="16" rx="2" fill="var(--c3)"/>${P(196,62,'var(--c1)','var(--hair)',1.15)}<path d="M184 92 q0 26 12 26 q12 0 12 -26" fill="none" stroke="var(--ink)" stroke-width="2.5"/><circle cx="196" cy="120" r="5" fill="var(--grey)"/><rect x="0" y="140" width="320" height="40" fill="var(--wood)"/><rect x="248" y="96" width="10" height="46" rx="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><rect x="250.5" y="112" width="5" height="28" fill="var(--c3)"/><circle cx="253" cy="140" r="7" fill="var(--c3)"/>${txt(282,92,'37,5°',14,'var(--c3)')}<rect x="60" y="118" width="40" height="22" rx="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><rect x="74" y="112" width="12" height="8" rx="2" fill="var(--c4)"/>`,
+14:()=>{const lab=(x,t)=>txt(x+40,170,t,12);let flakes='';[[14,30],[44,48],[22,74],[62,24],[56,90],[30,110]].forEach(p=>flakes+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--snow)"/>`);let bl='';[[110,62],[124,52],[132,68],[116,76],[126,80]].forEach(p=>bl+=`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="#F29BB9"/>`);return `<rect width="80" height="180" fill="var(--sky)"/><rect x="80" width="80" height="180" fill="var(--ground)"/><rect x="160" width="80" height="180" fill="var(--gold-soft)"/><rect x="240" width="80" height="180" fill="var(--block)"/>${flakes}<path d="M10 150 Q40 128 70 150Z" fill="var(--snow)"/><circle cx="40" cy="132" r="10" fill="var(--snow)"/><circle cx="40" cy="116" r="7" fill="var(--snow)"/><rect x="116" y="80" width="8" height="70" fill="var(--wood)"/>${bl}<circle cx="200" cy="74" r="24" fill="var(--sun)"/><path d="M200 38 V44 M200 104 V110 M164 74 H170 M230 74 H236 M175 49 l4 4 M221 95 l4 4 M225 49 l-4 4 M179 95 l-4 4" stroke="var(--sun)" stroke-width="4" stroke-linecap="round"/><rect x="276" y="86" width="8" height="64" fill="var(--wood)"/><circle cx="280" cy="70" r="26" fill="var(--c2)"/><circle cx="262" cy="150" r="5" fill="var(--c2)"/><circle cx="300" cy="156" r="4" fill="var(--c3)"/>${lab(0,'Қыс')}${lab(80,'Көктем')}${lab(160,'Жаз')}${lab(240,'Күз')}`},
+15:()=>{let aw='';for(let i=0;i<9;i++)aw+=`<rect x="${i*36}" y="14" width="36" height="26" fill="${i%2?'var(--surface)':'var(--c3)'}"/><circle cx="${i*36+18}" cy="40" r="18" fill="${i%2?'var(--surface)':'var(--c3)'}"/>`;let t='',c='',g='';[[50,96],[64,96],[78,96],[57,86],[71,86]].forEach(p=>t+=`<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="var(--c3)"/>`);for(let i=0;i<4;i++)c+=`<ellipse cx="${132+i*6}" cy="${96-i*4}" rx="20" ry="6" fill="var(--c4)"/>`;[[212,84],[220,84],[228,84],[216,92],[224,92],[220,100]].forEach(p=>g+=`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="var(--grape)"/>`);return `<rect width="320" height="180" fill="var(--sky)"/>${mtn()}<rect y="0" width="320" height="14" fill="var(--wood)"/>${aw}<rect x="20" y="104" width="280" height="12" rx="2" fill="var(--wood)"/><rect x="34" y="116" width="8" height="64" fill="var(--wood)"/><rect x="278" y="116" width="8" height="64" fill="var(--wood)"/>${t}${c}${g}<ellipse cx="268" cy="92" rx="22" ry="14" fill="var(--sun)"/><path d="M250 92 Q268 84 286 92" stroke="var(--c2)" stroke-width="2" fill="none"/><rect x="44" y="120" width="44" height="18" rx="3" fill="var(--surface)"/>${txt(66,133,'1000 ₸',10)}<rect x="122" y="120" width="40" height="18" rx="3" fill="var(--surface)"/>${txt(142,133,'800 ₸',10)}`},
+16:()=>`<rect width="320" height="180" fill="var(--sky)"/><path d="M0 120 V76 H30 V60 H64 V84 H96 V50 H128 V90 H160 V66 H200 V80 H236 V56 H268 V88 H320 V120Z" fill="var(--block)"/><rect y="120" width="320" height="60" fill="var(--road)"/><path d="M0 150 H320" stroke="var(--surface)" stroke-width="3" stroke-dasharray="16 12"/><path d="M40 136 V116 Q44 100 66 98 L92 82 Q100 78 112 78 H166 Q178 78 186 86 L204 100 Q222 102 226 116 V136Z" fill="var(--sun)"/><path d="M98 98 L114 84 H140 V98Z M146 84 H166 Q174 84 180 92 L186 98 H146Z" fill="var(--sky)"/><rect x="116" y="68" width="38" height="12" rx="3" fill="var(--ink)"/>${txt(135,77.5,'ТАКСИ',8,'var(--sun)')}<circle cx="78" cy="138" r="13" fill="var(--ink)"/><circle cx="78" cy="138" r="5" fill="var(--grey)"/><circle cx="190" cy="138" r="13" fill="var(--ink)"/><circle cx="190" cy="138" r="5" fill="var(--grey)"/><rect x="284" y="64" width="5" height="60" fill="var(--ink)"/><rect x="274" y="22" width="25" height="56" rx="6" fill="var(--ink)"/><circle cx="286.5" cy="34" r="6" fill="var(--c3)"/><circle cx="286.5" cy="50" r="6" fill="var(--sun)"/><circle cx="286.5" cy="66" r="6" fill="var(--c4)"/>${pin(246,56,'var(--c3)')}`,
+17:()=>`<rect width="320" height="180" fill="var(--sky)"/><rect y="150" width="320" height="30" fill="var(--ground)"/><path d="M60 66 L150 26 L240 66Z" fill="var(--block)" stroke="var(--ink)" stroke-width="1.5"/>${txt(150,58,'БАНК',13)}<rect x="66" y="66" width="168" height="10" fill="var(--block)" stroke="var(--ink)" stroke-width="1.5"/><rect x="78" y="76" width="14" height="64" fill="var(--surface)"/><rect x="112" y="76" width="14" height="64" fill="var(--surface)"/><rect x="174" y="76" width="14" height="64" fill="var(--surface)"/><rect x="208" y="76" width="14" height="64" fill="var(--surface)"/><rect x="138" y="96" width="24" height="44" fill="var(--wood)"/><rect x="58" y="140" width="184" height="10" fill="var(--block)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="276" cy="48" r="20" fill="var(--sun)"/>${txt(276,56,'₸',22,'#152A2E')}<circle cx="34" cy="44" r="16" fill="var(--c4)"/>${txt(34,51,'$',18,'#FFFFFF')}<g transform="rotate(-12 274 118)"><rect x="248" y="100" width="54" height="34" rx="5" fill="var(--c1)"/><rect x="248" y="108" width="54" height="7" fill="var(--ink)"/><rect x="254" y="122" width="14" height="6" rx="1" fill="var(--sun)"/></g>`,
+18:()=>{let b='';[[112,112],[122,108],[118,118],[206,112],[214,118],[200,118]].forEach(p=>b+=`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="var(--c2)"/>`);let orn='';for(let i=0;i<8;i++)orn+=`<path d="M${20+i*40} 30 V22 C${20+i*40} 14 ${10+i*40} 12 ${8+i*40} 16 C${7+i*40} 19 ${11+i*40} 20 ${12+i*40} 18 M${20+i*40} 22 C${20+i*40} 14 ${30+i*40} 12 ${32+i*40} 16 C${33+i*40} 19 ${29+i*40} 20 ${28+i*40} 18" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round"/>`;return `<rect width="320" height="180" fill="var(--wall)"/>${orn}${P(78,62,'var(--c3)','var(--hair2)',1,true)}${P(242,60,'var(--c4)','var(--grey)',1,true)}<ellipse cx="160" cy="128" rx="138" ry="28" fill="var(--wood)"/><ellipse cx="160" cy="122" rx="128" ry="22" fill="var(--c3)" opacity=".25"/><ellipse cx="160" cy="118" rx="34" ry="9" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><ellipse cx="160" cy="112" rx="22" ry="8" fill="var(--gold-soft)"/><path d="M146 110 h28 M150 114 h20" stroke="var(--c2)" stroke-width="2"/>${b}<ellipse cx="250" cy="110" rx="12" ry="10" fill="var(--c1)"/><path d="M262 106 q8 -2 9 -9" stroke="var(--c1)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M70 120 h18 l-3 8 h-12z M232 124 h18 l-3 8 h-12z" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/>`},
+19:()=>`<rect width="320" height="180" fill="var(--wall)"/><g transform="rotate(-28 92 100)"><rect x="88" y="10" width="8" height="110" rx="3" fill="var(--wood)"/><path d="M92 106 C64 106 66 168 92 168 C118 168 120 106 92 106Z" fill="var(--wood)"/><circle cx="92" cy="140" r="7" fill="var(--ink)"/><path d="M90 14 V156 M94 14 V156" stroke="var(--surface)" stroke-width=".8"/></g><path d="M170 120 C150 100 170 64 210 66 C250 68 262 104 238 118 C226 124 230 136 214 140 C196 144 186 134 170 120Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><circle cx="196" cy="84" r="7" fill="var(--c3)"/><circle cx="218" cy="82" r="7" fill="var(--c1)"/><circle cx="236" cy="98" r="7" fill="var(--sun)"/><circle cx="184" cy="104" r="7" fill="var(--c4)"/><circle cx="210" cy="124" r="6" fill="var(--wall)" stroke="var(--ink)"/><circle cx="276" cy="140" r="22" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><path d="M276 130 l9 6 -3 10 h-12 l-3 -10z" fill="var(--ink)"/><path d="M250 36 v26 a6 5 0 1 1 -3 -4 v-18 l18 -4 v20 a6 5 0 1 1 -3 -4 v-14z" fill="var(--c1)"/>`,
+20:()=>`<rect width="320" height="180" fill="var(--sky)"/><path d="M60 150 Q140 40 250 50" fill="none" stroke="var(--surface)" stroke-width="3" stroke-dasharray="8 8"/><g transform="translate(262 46) rotate(-12)"><path d="M-26 0 L20 -4 Q30 -4 30 0 Q30 4 20 4 L-26 4Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.2"/><path d="M-2 -2 L-14 -22 L-6 -22 L12 -2Z M-2 4 L-14 22 L-6 22 L12 4Z M-24 0 L-30 -10 L-24 -10 L-18 0Z" fill="var(--c1)"/></g><rect x="30" y="40" width="80" height="128" rx="12" fill="var(--ink)"/><rect x="36" y="52" width="68" height="104" rx="5" fill="var(--surface)"/><rect x="42" y="62" width="44" height="16" rx="8" fill="var(--accent-soft)"/><rect x="54" y="84" width="44" height="16" rx="8" fill="var(--gold-soft)"/><rect x="42" y="106" width="36" height="16" rx="8" fill="var(--accent-soft)"/>${txt(76,96,'Келістік!',7)}<rect x="166" y="96" width="120" height="70" rx="6" fill="var(--surface)" stroke="var(--line)"/><rect x="166" y="96" width="120" height="18" rx="6" fill="var(--c3)"/>${txt(226,109,'СЕНБІ',10,'#FFFFFF')}${txt(226,148,'Астана',18)}`,
+21:()=>{let w='';for(let r=0;r<4;r++)for(let c=0;c<4;c++)w+=`<rect x="${108+c*28}" y="${50+r*22}" width="16" height="14" rx="2" fill="${(r+c)%3?'var(--sky)':'var(--sun)'}"/>`;return `<rect width="320" height="180" fill="var(--sky)"/>${mtn()}<rect y="150" width="320" height="30" fill="var(--road)"/><rect x="96" y="30" width="128" height="122" fill="var(--block)" stroke="var(--ink)" stroke-width="1.5"/><rect x="104" y="14" width="112" height="22" rx="4" fill="var(--c1)"/>${txt(160,30,'ҚОНАҚҮЙ',12,'#FFFFFF')}${w}<rect x="146" y="134" width="28" height="18" fill="var(--wood)"/>${txt(160,48,'★★★',9,'var(--gold)')}<path d="M262 150 a18 18 0 0 1 36 0Z" fill="var(--gold)"/><rect x="258" y="150" width="44" height="5" rx="2" fill="var(--ink)"/><circle cx="280" cy="129" r="3" fill="var(--gold)"/><rect x="34" y="122" width="34" height="28" rx="5" fill="var(--c3)"/><path d="M44 122 v-6 h14 v6" fill="none" stroke="var(--ink)" stroke-width="2.5"/>`}
+};
+function scene(id){return `<svg class="scn" viewBox="0 0 320 180" role="img" aria-label="Иллюстрация к уроку">${SC[id]()}</svg>`}
+
+/* ===================== HELPERS & STATE ===================== */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const app=$('#app');
+L.forEach(l=>{l.w=l.words.trim().split('\n').map(s=>{const p=s.split('|');return {id:l.id+':'+p[0],kk:p[0],ru:p[1],pic:p[2]||'',t:p[3]==='t',L:l.id}})});
+const ALLW=L.flatMap(l=>l.w); const WMAP=Object.fromEntries(ALLW.map(w=>[w.id,w]));
+function phrases(l){return [...(l.ph||[]),...l.dlg.filter(d=>d[1].split(' ').length<=7).map(d=>[d[1],d[2]])]}
+const DAY=864e5, INT=[0,8*36e5,DAY,3*DAY,7*DAY,16*DAY,35*DAY,90*DAY];
+const KEY='kz-course-v1';
+let USER=null,fauth=null,fdb=null;const lkey=()=>USER?KEY+':'+USER.uid:KEY;
+function loadLocal(k){try{const s=JSON.parse(localStorage.getItem(k));return s&&s.v?s:null}catch(e){return null}}
+function fresh(){return {v:1,upd:0,test:null,known:{},gram:{},les:{},srs:{}}}
+let S=(()=>{try{const s=JSON.parse(localStorage.getItem(KEY));return s&&s.v?s:fresh()}catch(e){return fresh()}})();
+let rdoc=null,saveT=null;
+function setSync(m){if(m==='acct'||m==='acct-err'||m==='guest'){$('#sync').textContent=m==='acct'?'Прогресс сохраняется в вашем аккаунте — открывайте курс по той же ссылке на любом устройстве.':m==='guest'?'Вы не вошли: прогресс хранится только в этом браузере. Войдите через Google, чтобы сохранить его в аккаунте.':'Нет связи с сервером: прогресс сохранён в браузере и синхронизируется позже.';return}$('#sync').textContent=m==='ok'?'Прогресс сохраняется в вашем аккаунте Claude — он доступен на любом устройстве.':m==='err'?'Не удалось сохранить в аккаунт; прогресс сохранён в этом браузере.':'Прогресс сохраняется в этом браузере.'}
+function save(){S.upd=Date.now();try{localStorage.setItem(lkey(),JSON.stringify(S))}catch(e){}clearTimeout(saveT);saveT=setTimeout(remoteSave,700);updBadge()}
+async function remoteSave(){if(USER&&fdb){try{await fdb.collection('users').doc(USER.uid).set({s:JSON.stringify(S),upd:S.upd,name:USER.name,email:USER.email});setSync('acct')}catch(e){setSync('acct-err')}return}if(!rdoc)return;try{await rdoc.set({s:JSON.stringify(S),upd:S.upd});setSync('ok')}catch(e){setSync('err')}}
+async function initRemote(){try{if(!window.claude||!window.claude.use)return;const [db,user]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);if(!db||!user)return;const id=await user.id();if(!id)return;rdoc=db.collection('data/users/'+id).doc('progress');const snap=await rdoc.get();if(snap.exists){const d=snap.data();if(d&&d.s){const r=JSON.parse(d.s);if((r.upd||0)>(S.upd||0)){S=r;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}const v=curView();if(v==='course'||v==='review'||v==='guide'||v.startsWith('lesson'))route()}}}else if(S.upd)remoteSave();setSync('ok')}catch(e){}}
+function lineId(l,k){const i=phrases(l).findIndex(p=>p[0]===l.dlg[k][1]);return i>=0?l.id+':p:'+i:l.id+':d:'+k}
+function addBtn(id,short){const on=!!S.srs[id];return `<button class="addc${on?' in':''}" data-addcard="${esc(id)}" aria-pressed="${on}" title="${on?'Убрать из карточек':'Добавить в карточки'}">${on?'✓'+(short?'':' В карточках'):'+'+(short?'':' В карточки')}</button>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-addcard]');if(!b)return;const id=b.dataset.addcard;if(S.srs[id]){delete S.srs[id];toast('Убрано из карточек')}else{S.srs[id]={b:0,due:Date.now()};toast('Добавлено в карточки')}save();const short=!/В карточ/.test(b.textContent);b.outerHTML=addBtn(id,short)});
+function srsAdd(id,box,delay){if(!S.srs[id]||S.srs[id].b<box)S.srs[id]={b:box,due:Date.now()+(delay==null?INT[box]:delay)}}
+function dueIds(){const n=Date.now();return Object.keys(S.srs).filter(id=>S.srs[id].due<=n&&cardOf(id))}
+function cardOf(id){if(id.startsWith('c:')){const c=(S.custom||{})[id];return c?{kk:c.kk,ru:c.ru,custom:true}:null}const d=id.match(/^(\d+):d:(\d+)$/);if(d){const l=L.find(x=>x.id==d[1]);const x=l&&l.dlg[+d[2]];return x?{kk:x[1],ru:x[2],ph:true}:null}const m=id.match(/^(\d+):p:(\d+)$/);if(m){const l=L.find(x=>x.id==m[1]);const p=l&&phrases(l)[+m[2]];return p?{kk:p[0],ru:p[1],ph:true}:null}return WMAP[id]||null}
+function updBadge(){const n=dueIds().length,b=$('#dueBadge');b.hidden=!n;b.textContent=n}
+/* audio: pre-recorded clips per lesson, browser voice as fallback */
+let kkVoice=null;function findVoice(){try{const v=speechSynthesis.getVoices().find(v=>/^kk/i.test(v.lang));if(v)kkVoice=v}catch(e){}}
+if('speechSynthesis' in window){findVoice();try{speechSynthesis.onvoiceschanged=findVoice}catch(e){}}
+const akey=t=>String(t).replace(/…/g,'').replace(/\s+/g,' ').trim();
+const AUD={},AUDL={},TXL={};
+L.forEach(l=>{const a=k=>{k=akey(k);if(k&&TXL[k]==null)TXL[k]=l.id};l.w.forEach(w=>a(w.kk));l.dlg.forEach(d=>a(d[1]));(l.ph||[]).forEach(p=>a(p[0]))});
+GUIDE_PH.forEach(p=>{const k=akey(p[0]);if(TXL[k]==null)TXL[k]=0});
+function loadAud(id){if(id==null)return Promise.resolve(false);if(!AUDL[id])AUDL[id]=fetch('audio/l'+id+'.json').then(r=>r.ok?r.json():{}).then(m=>{Object.assign(AUD,m);return true}).catch(()=>{delete AUDL[id];return false});return AUDL[id]}
+function hasAud(t){return !!AUD[akey(t)]}
+let curA=null,toastT=null;
+function toast(m){let t=$('.toast');if(!t){t=document.createElement('div');t.className='toast';t.setAttribute('role','status');document.body.appendChild(t)}t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600)}
+function stopAud(){if(curA){curA.onended=null;curA.pause();curA=null}try{speechSynthesis.cancel()}catch(e){}}
+function play(t){const k=akey(t);const go=()=>{if(AUD[k]){stopAud();const a=new Audio(AUD[k]);a.playbackRate=(S.prefs&&S.prefs.rate)||1;curA=a;return new Promise(res=>{a.onended=()=>res(true);a.onerror=()=>res(false);a.play().catch(()=>res(false))})}
+ if(kkVoice){stopAud();return new Promise(res=>{try{const u=new SpeechSynthesisUtterance(k);u.voice=kkVoice;u.lang=kkVoice.lang;u.rate=.85;u.onend=()=>res(true);u.onerror=()=>res(false);speechSynthesis.speak(u)}catch(e){res(false)}})}
+ toast('Запись не загрузилась. Проверьте интернет и попробуйте ещё раз.');return Promise.resolve(false)};
+ if(AUD[k]||TXL[k]==null)return go();return loadAud(TXL[k]).then(go)}
+const SAYI='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+const say=(t,big)=>`<button class="say${big?' big':''}" data-say="${esc(t)}" aria-label="Слушать" title="Слушать">${SAYI}</button>`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-say]');if(b){e.preventDefault();b.classList.add('on');play(b.dataset.say).then(()=>b.classList.remove('on'))}});
+function pic(w){if(!w.pic)return `<span class="pic pic-txt">${esc(w.kk[0].toUpperCase())}</span>`;if(w.pic[0]==='#')return `<span class="pic sw" style="background:${w.pic}"></span>`;if(/^[\dА-Яа-яӘә₸]/.test(w.pic))return `<span class="pic pic-txt">${esc(w.pic)}</span>`;return `<span class="pic">${w.pic}</span>`}
+
+/* ===================== ROUTER ===================== */
+function curView(){return location.hash.slice(1)||'course'}
+function route(){const v=curView();document.querySelectorAll('[data-nav]').forEach(a=>{a.toggleAttribute('aria-current',false);if(v===a.dataset.nav||(v.startsWith('lesson')&&a.dataset.nav==='course')||(v==='test'&&a.dataset.nav==='course'))a.setAttribute('aria-current','page')});
+ if(v==='test')viewTestIntro();else if(v==='cards'||v==='review')viewCards();else if(v==='guide')viewGuide();else if(v==='account')viewAccount();else if(v.startsWith('lesson-'))viewLesson(+v.split('-')[1]);else viewCourse();
+ updBadge();window.scrollTo(0,0)}
+window.addEventListener('hashchange',route);
+
+/* ===================== COURSE ===================== */
+function plural(n,a,b,c){const m=n%10,h=n%100;return m===1&&h!==11?a:m>=2&&m<=4&&(h<10||h>=20)?b:c}
+function bindAddForm(after){const f=$('#quickAdd');if(!f)return;const kk=$('#qkk'),ru=$('#qru');
+ $('#qkb').querySelectorAll('button').forEach(b=>b.onclick=()=>{const p=kk.selectionStart??kk.value.length;kk.value=kk.value.slice(0,p)+b.dataset.c+kk.value.slice(kk.selectionEnd??p);kk.focus();kk.setSelectionRange(p+1,p+1)});
+ f.onsubmit=e=>{e.preventDefault();const a=kk.value.trim(),b=ru.value.trim();if(!a||!b)return;S.custom=S.custom||{};const id='c:'+Date.now().toString(36);S.custom[id]={kk:a,ru:b,t:Date.now()};S.srs[id]={b:0,due:Date.now()};save();toast('Добавлено: '+a);after()}}
+function viewCourse(){
+ const known=ALLW.filter(w=>S.known[w.id]).length,due=dueIds().length,done=L.filter(l=>S.les[l.id]&&S.les[l.id].done).length;
+ const next=L.find(l=>!(S.les[l.id]&&S.les[l.id].done))||L[0];
+ const top=!S.test?`<section class="hero"><div><h1>Самоучитель <em>казахского языка</em></h1><p>Магазин, автобус, знакомство, работа, гости, врач. ${L.length} ${plural(L.length,'урок','урока','уроков')} уровня A1–A2. В каждом — ситуация с диалогом, слова с картинками, понятная грамматика и практика. Начните с теста: всё, что вы уже знаете, будет отмечено и не будет изучаться заново — эти слова останутся в диалогах и упражнениях как знакомые.</p><div class="row"><a class="btn" href="#test">Пройти тест на уровень</a><button class="btn ghost" id="skipTest">Начать с нуля</button></div><p class="muted" style="font-size:14px;margin-top:12px">Тест: до ${L.length*3} вопросов, 8–12 минут; заканчивается сам, если темы станут незнакомыми. Можно пройти заново в любой момент.</p></div><div>${scene(1)}</div></section>`
+ :`<section class="hero"><div>${S.prefs&&S.prefs.name?`<p style="margin:0 0 10px;font-size:18px">Сәлем, <b>${esc(S.prefs.name)}</b>!</p>`:''}<div class="lnum">Ваш уровень по тесту</div><h1 style="margin:6px 0 4px"><span class="lvl">${esc(S.test.level)}</span></h1><p>Следующий урок: <b>${next.kk}</b> — ${next.ru}.</p><div class="row"><a class="btn" href="#lesson-${next.id}">Продолжить</a><a class="btn ghost small" href="#test">Пройти тест заново</a></div>${!S.test.skipped&&(S.test.upto||11)<L.length?`<div class="banner"><p><b>Добавлены уроки ${(S.test.upto||11)+1}–${L.length}.</b> Пройдите короткий тест по ним, чтобы отметить, что вы уже знаете.</p><a class="btn small" href="#test">Тест по новым урокам</a></div>`:''}</div><div class="stats"><div class="stat"><b>${known}</b><span>слов знаете</span></div><div class="stat"><b>${ALLW.length-known}</b><span>слов впереди</span></div><div class="stat"><b>${done}/${L.length}</b><span>уроков пройдено</span></div><div class="stat"><b>${due}</b><span>к повторению</span></div></div></section>`;
+ const cards=L.map(l=>{const k=l.w.filter(w=>S.known[w.id]).length,st=S.les[l.id];return `<a class="lcard" href="#lesson-${l.id}"><div class="lthumb">${scene(l.id)}</div><div class="lmeta"><div class="lnum">Урок ${l.id} · ${l.lvl}</div><h3>${l.kk}</h3><p class="lru">${l.ru}</p><div class="lstats"><span>${l.w.length-k} новых слов</span>${k?`<span class="known">${k} знакомых</span>`:''}${S.gram[l.id]?'<span class="known">грамматика знакома</span>':''}${st&&st.done?`<span class="okpill">Пройден · ${st.best}%</span>`:''}</div></div></a>`}).join('');
+ const nC=Object.keys(S.srs).filter(cardOf).length,nMy=Object.keys(S.custom||{}).length;
+ const ch=`<section class="cardsHome"><div><div class="lnum">Карточки для повторения</div><h2 style="margin-top:4px">${due?`К повторению: ${due} ${plural(due,'карточка','карточки','карточек')}`:nC?'На сейчас всё повторено':'Ваша колода пока пуста'}</h2><p class="muted" style="margin:6px 0 12px">Знаю — карточка вернётся через несколько дней, и с каждым разом позже. Не знаю — она снова появится в этом же раунде, пока не запомнится.</p><div class="row"><a class="btn" href="#cards">${due?'Повторять':'Открыть карточки'}</a></div><div class="deckStack" aria-hidden="true"><div></div><div></div><div>${due||nC}</div></div></div>
+ <form class="addform" id="quickAdd" autocomplete="off"><div class="lnum">Добавить своё слово или фразу</div><label for="qkk">По-казахски</label><input id="qkk" placeholder="например, Сағат неше болды?" required><div class="kb" id="qkb">${KB.map(c=>`<button type="button" data-c="${c}">${c}</button>`).join('')}</div><label for="qru">Перевод</label><input id="qru" placeholder="например, Который час?" required><div class="row"><button class="btn" type="submit">Добавить в карточки</button><span class="muted" style="font-size:13px">Своих карточек: ${nMy}</span></div></form></section>`;
+ app.innerHTML=top+ch+`<h2 class="sec">Уроки</h2><div class="lgrid">${cards}</div>`;bindAddForm(()=>viewCourse());
+ const sk=$('#skipTest');if(sk)sk.onclick=()=>{S.test={level:'A0 — с нуля',score:0,date:Date.now(),skipped:true,upto:L.length};save();route()};
+}
+
+/* ===================== QUIZ ENGINE ===================== */
+const KB=['ә','ғ','қ','ң','ө','ұ','ү','һ','і'];
+const norm=s=>s.toLowerCase().replace(/[.,!?…—«»"]/g,'').replace(/\s+/g,' ').trim();
+const loose=s=>norm(s).replace(/ә/g,'а').replace(/ғ/g,'г').replace(/қ/g,'к').replace(/ң/g,'н').replace(/ө/g,'о').replace(/[ұү]/g,'у').replace(/һ/g,'х').replace(/і/g,'и');
+function runQuiz(root,items,onDone,opt){opt=opt||{};let i=0,score=0;const res=[];
+ function finish(ok,fb){res.push({it:items[i],ok});if(ok)score++;const f=$('.fb',root);f.hidden=false;f.className='fb '+(ok?'ok':'no');f.innerHTML=fb;const a=$('.qact',root);a.innerHTML=`<button class="btn" id="qnext">${i+1<items.length?'Дальше':'Результат'}</button>`;const n=$('#qnext');n.onclick=()=>{i++;show()};n.focus()}
+ function show(){if(i>=items.length||(opt.stop&&opt.stop(res,i,items))){onDone(score,res);return}const it=items[i];
+  root.innerHTML=`<div class="quiz"><div class="qhead"><div class="bar"><span style="width:${i/items.length*100}%"></span></div><span class="qcount">${i+1} / ${items.length}</span></div><div class="qcard"><div class="qlabel">${it.label}</div><div class="qtext">${it.q}</div><div class="qbody"></div><div class="fb" hidden></div><div class="qact"></div></div></div>`;
+  const body=$('.qbody',root);if(it.auto)setTimeout(()=>play(it.auto),250);
+  if(it.type==='mc'){const right=it.opts[0];const os=shuffle(it.opts);body.innerHTML=`<div class="opts">${os.map((o,k)=>`<button class="opt" data-k="${k}">${esc(o)}</button>`).join('')}</div>${opt.idk?'<button class="idk">Не знаю</button>':''}`;
+   const pickO=k=>{body.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(os[j]===right)b.classList.add('right');else if(j===k)b.classList.add('wrong')});const idk=$('.idk',body);if(idk)idk.remove();const ok=k>=0&&os[k]===right;finish(ok,(ok?'<b>Верно!</b> ':'<b>Правильно:</b> '+esc(right)+'. ')+(it.ex?esc(it.ex):''))};
+   body.querySelectorAll('.opt').forEach(b=>b.onclick=()=>pickO(+b.dataset.k));const idk=$('.idk',body);if(idk)idk.onclick=()=>pickO(-1)}
+  else if(it.type==='type'){body.innerHTML=`<input class="tin" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Напишите по-казахски"><div class="kb">${KB.map(c=>`<button type="button" data-c="${c}">${c}</button>`).join('')}</div>`;const inp=$('#tin');inp.focus();
+   body.querySelectorAll('.kb button').forEach(b=>b.onclick=()=>{const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+b.dataset.c+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+1,p+1)});
+   $('.qact',root).innerHTML='<button class="btn" id="chk">Проверить</button>';
+   const check=()=>{const v=inp.value;if(!v.trim())return;inp.disabled=true;body.querySelectorAll('.kb button').forEach(b=>b.disabled=true);const ok=norm(v)===norm(it.ans);const almost=!ok&&loose(v)===loose(it.ans);finish(ok||almost,ok?`<b>Верно!</b> ${esc(it.ans)}`:almost?`<b>Почти!</b> Обратите внимание на казахские буквы: <b>${esc(it.ans)}</b>`:`<b>Правильно:</b> ${esc(it.ans)}`)};
+   $('#chk').onclick=check;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();if(!inp.disabled)check()}}}
+  else if(it.type==='build'){let ans=[],pool=shuffle(it.toks.map((t,k)=>({t,k})));
+   const draw=()=>{body.innerHTML=`<div class="ansl" aria-label="Ваш ответ">${ans.map((o,j)=>`<button class="tok" data-a="${j}">${esc(o.t)}</button>`).join('')||'<span class="muted" style="padding:6px">Нажимайте на слова по порядку</span>'}</div><div class="pool">${pool.map((o,j)=>`<button class="tok" data-p="${j}">${esc(o.t)}</button>`).join('')}</div>`;
+    body.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ans.push(pool.splice(+b.dataset.p,1)[0]);draw()});body.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{pool.push(ans.splice(+b.dataset.a,1)[0]);draw()})};draw();
+   $('.qact',root).innerHTML='<button class="btn" id="chk">Проверить</button>';
+   $('#chk').onclick=()=>{if(pool.length)return;body.querySelectorAll('.tok').forEach(b=>b.disabled=true);const ok=ans.map(o=>norm(o.t)).join(' ')===it.toks.map(norm).join(' ');finish(ok,(ok?'<b>Верно!</b> ':'<b>Правильно:</b> ')+esc(it.full))}}
+ }
+ show()}
+
+function distract(correct,pool,n,key){const out=[],seen=new Set([correct]);for(const w of shuffle(pool)){const v=w[key];if(!seen.has(v)){seen.add(v);out.push(v)}if(out.length>=n)break}return out}
+function qKkRu(w){const same=L.find(l=>l.id===w.L).w.filter(x=>x!==w);return {type:'mc',label:'Что это значит?',q:`${pic(w)}<span class="big">${esc(w.kk)}</span>${say(w.kk)}`,opts:[w.ru,...distract(w.ru,same.length>=3?same:ALLW,3,'ru')],wid:w.id}}
+function qRuKk(w){const same=L.find(l=>l.id===w.L).w.filter(x=>x!==w);return {type:'mc',label:'Как сказать по-казахски?',q:`${pic(w)}<span class="big" style="font-size:22px">${esc(w.ru)}</span>`,opts:[w.kk,...distract(w.kk,same,3,'kk')],wid:w.id}}
+function qGram(g,lid){return {type:'mc',label:'Грамматика',q:`<span>${esc(g[0]).replace('___','<span class="blank">___</span>')}</span>`,opts:g[1],ex:g[2],gl:lid}}
+
+/* ===================== PLACEMENT TEST ===================== */
+let TEST_FROM=1;
+function viewTestIntro(){const partial=S.test&&!S.test.skipped&&(S.test.upto||11)<L.length;const from=(S.test&&S.test.upto)||11;
+ app.innerHTML=`<section class="hero"><div><div class="lnum">Тест на уровень A1–A2</div><h1 style="margin-top:6px">Что вы уже знаете?</h1><p>По 2 слова и 1 вопросу на грамматику из каждого урока, от простого к сложному. Если не знаете ответа — нажимайте «Не знаю», не угадывайте. Если две темы подряд окажутся незнакомыми, тест закончится сам.</p><p class="muted" style="font-size:15px">Если вы правильно ответите на все слова урока, вся его лексика будет отмечена как знакомая и уйдёт в повторение, а не в изучение. Остальное можно отметить вручную в самом уроке.</p><div class="row">${partial?`<button class="btn" id="tnew">Только новые уроки ${from+1}–${L.length}</button><button class="btn ghost" id="tgo">Полный тест</button>`:'<button class="btn" id="tgo">Начать тест</button>'}<a class="btn ghost" href="#course">Назад</a></div></div><div>${scene(3)}</div></section>`;
+ $('#tgo').onclick=()=>startTest(1);const n=$('#tnew');if(n)n.onclick=()=>startTest(from+1)}
+function startTest(from){TEST_FROM=from;const items=[];L.filter(l=>l.id>=from).forEach(l=>{const tw=l.w.filter(w=>w.t);tw.slice(0,2).forEach(w=>{const q=qKkRu(w);q.opts=[w.ru,...distract(w.ru,ALLW.filter(x=>x!==w),3,'ru')];q.label=`Слово · тема «${l.ru}»`;q.tl=l.id;items.push(q)});const g=qGram(l.gx[0],l.id);g.label=`Грамматика · тема «${l.ru}»`;g.tl=l.id;items.push(g)});
+ const stop=(res,i,items)=>{if(!i||items[i].tl===items[i-1].tl)return false;const ids=[...new Set(res.map(r=>r.it.tl))];if(ids.length<2)return false;return ids.slice(-2).every(id=>!res.some(r=>r.it.tl===id&&r.ok))};
+ app.innerHTML='<div id="quiz"></div>';runQuiz($('#quiz'),items,finishTest,{idk:true,stop})}
+function finishTest(score,res){const per={};
+ res.forEach(r=>{const id=r.it.tl;per[id]=per[id]||{w:0,wt:0,g:false};if(r.it.wid){per[id].wt++;if(r.ok){per[id].w++;S.known[r.it.wid]=1;srsAdd(r.it.wid,3)}}else{per[id].g=r.ok;if(r.ok)S.gram[id]=1}});
+ let inferred=0;Object.keys(per).forEach(id=>{const p=per[id];if(p.wt&&p.w===p.wt){L.find(l=>l.id==id).w.forEach(w=>{if(!S.known[w.id]){S.known[w.id]=2;srsAdd(w.id,2);inferred++}})}});
+ const tested=L.filter(l=>l.id>=TEST_FROM),totalQ=tested.length*3;const f=score/totalQ;
+ const lv=f<.2?'A0 — с нуля':f<.45?'A1 — начало':f<.7?'A1':f<.85?'A2 — начало':'A2';
+ let level=lv;if(TEST_FROM>1&&S.test&&S.test.level){level=f>=.6?'A2':S.test.level}
+ S.test={level,score,total:res.length,date:Date.now(),upto:L.length};save();
+ const known=ALLW.filter(w=>S.known[w.id]).length;
+ app.innerHTML=`<section class="res"><div class="lnum">Результат теста</div><div class="row" style="gap:20px;margin:10px 0 6px"><div class="score">${score}<span style="font-size:22px;color:var(--muted)">/${res.length}</span></div><div><h2>Уровень: <span class="lvl">${level}</span></h2><p class="muted" style="margin:4px 0 0">Всего знакомых слов: ${known}${inferred?` (${inferred} — по целым темам)`:''}. Они не будут изучаться заново, но встретятся в диалогах и повторении.</p></div></div>
+ <div style="margin-top:16px">${tested.map(l=>{const p=per[l.id];if(!p)return `<div class="lrow"><span><b>${l.kk}</b> <span class="muted">· ${l.ru}</span></span><span class="muted" style="font-size:13px">не проверялось</span><span></span></div>`;const v=p.w+(p.g?1:0);return `<div class="lrow"><span><b>${l.kk}</b> <span class="muted">· ${l.ru}</span></span><div class="bar"><span style="width:${v/(p.wt+1)*100}%;${v===p.wt+1?'background:var(--ok)':''}"></span></div><span>${v}/${p.wt+1}</span></div>`}).join('')}</div>
+ <div class="row" style="margin-top:20px"><a class="btn" href="#course">К урокам</a></div></section>`}
+
+/* ===================== LESSON ===================== */
+let LS={id:0,step:0,tr:true};
+const STEPS=['Ситуация','Слова','Грамматика','Практика'];
+function viewLesson(id){const l=L.find(x=>x.id===id);if(!l){location.hash='course';return}if(LS.id!==id)LS={id,step:0,tr:true};
+ const prev=L.find(x=>x.id===id-1),nxt=L.find(x=>x.id===id+1);
+ app.innerHTML=`<a class="back" href="#course">← Все уроки</a><div class="lhead"><div><div class="lnum">Урок ${l.id} · ${l.lvl}</div><h1>${l.kk}</h1><p class="lru">${l.ru}</p></div></div>
+ <div class="steps" role="tablist">${STEPS.map((s,k)=>`<button role="tab" data-st="${k}" aria-selected="${k===LS.step}"><i>${k+1}</i>${s}</button>`).join('')}</div><div id="stepBody"></div>
+ <div class="row" style="justify-content:space-between;margin-top:28px">${prev?`<a class="btn ghost small" href="#lesson-${prev.id}">← ${prev.kk}</a>`:'<span></span>'}${nxt?`<a class="btn ghost small" href="#lesson-${nxt.id}">${nxt.kk} →</a>`:''}</div>`;
+ app.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{LS.step=+b.dataset.st;viewLesson(id)});
+ const sb=$('#stepBody');loadAud(l.id);[stepSit,stepWords,stepGram,stepPractice][LS.step](l,sb)}
+function nextBtn(label){return `<div class="row" style="margin-top:22px"><button class="btn" id="toNext">${label}</button></div>`}
+function bindNext(l){const b=$('#toNext');if(b)b.onclick=()=>{LS.step++;viewLesson(l.id);window.scrollTo(0,0)}}
+function stepSit(l,sb){const me=new Set(['Анна']);
+ sb.innerHTML=`<div class="sitgrid"><div style="display:flex;flex-direction:column;gap:14px">${scene(l.id)}<div class="note"><b>Ситуация</b>${esc(l.sit)}</div><div class="use"><b>Когда пригодится</b>${esc(l.use)}</div></div>
+ <div><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 class="sec" style="margin:0">Диалог</h2><div class="row" style="gap:6px"><button class="btn small" id="playAll">▶ Слушать диалог</button><button class="btn ghost small" id="trT">${LS.tr?'Скрыть перевод':'Показать перевод'}</button></div></div>
+ <div class="dlg ${LS.tr?'':'hide-tr'}" id="dlg">${l.dlg.map(d=>`<div class="line ${me.has(d[0])?'me':''}"><div class="who">${esc(d[0])}</div><div><div class="kk">${esc(d[1])}</div><div class="tr">${esc(d[2])}</div></div><div class="acts">${say(d[1])}${addBtn(lineId(l,l.dlg.indexOf(d)),true)}</div></div>`).join('')}</div>
+ <p class="muted" style="font-size:14px">Нажмите «+», чтобы добавить фразу в карточки. Совет: скройте перевод и прочитайте диалог вслух за Анну.</p>
+ ${l.ph&&l.ph.length?`<h2 class="sec" style="font-size:17px">Полезные фразы</h2><div class="phr">${l.ph.map(p=>`<div class="row" style="flex-wrap:nowrap;justify-content:space-between"><div style="min-width:0"><div class="kk">${esc(p[0])}</div><div class="tr">${esc(p[1])}</div></div><div class="acts">${say(p[0])}${addBtn(l.id+':p:'+l.ph.indexOf(p),true)}</div></div>`).join('')}</div>`:''}</div></div>${nextBtn('К словам →')}`;
+ $('#trT').onclick=()=>{LS.tr=!LS.tr;stepSit(l,sb)};bindNext(l);
+ let playing=false;const pa=$('#playAll');pa.onclick=async()=>{if(playing){playing=false;stopAud();pa.textContent='▶ Слушать диалог';sb.querySelectorAll('.line').forEach(x=>x.classList.remove('playing'));return}playing=true;pa.textContent='■ Стоп';const lines=[...sb.querySelectorAll('.line')];for(let k=0;k<l.dlg.length&&playing;k++){lines.forEach(x=>x.classList.remove('playing'));lines[k].classList.add('playing');const ok=await play(l.dlg[k][1]);if(!ok)break;await new Promise(r=>setTimeout(r,450))}lines.forEach(x=>x.classList.remove('playing'));playing=false;if(document.body.contains(pa))pa.textContent='▶ Слушать диалог'}}
+function stepWords(l,sb){const nw=l.w.filter(w=>!S.known[w.id]),kn=l.w.filter(w=>S.known[w.id]);
+ sb.innerHTML=`<p class="muted" style="margin-top:0">Новые слова урока. «Уже знаю» — слово уйдёт в повторение с длинным интервалом. «+» — добавить слово в карточки прямо сейчас. После практики все слова урока попадут в карточки автоматически.</p>
+ <h2 class="sec" style="margin-top:8px">Новые слова · ${nw.length}</h2>${nw.length?`<div class="wgrid">${nw.map(w=>`<div class="wcard"><div class="top2">${pic(w)}${say(w.kk)}</div><div class="kk">${esc(w.kk)}</div><div class="ru">${esc(w.ru)}</div><div class="row" style="justify-content:space-between;margin-top:auto"><button class="tog" data-known="${esc(w.id)}">Уже знаю</button>${addBtn(w.id,true)}</div></div>`).join('')}</div>`:'<p>Все слова этого урока вам знакомы. Переходите к грамматике и практике.</p>'}
+ ${kn.length?`<h2 class="sec">Уже знакомые · ${kn.length}</h2><p class="muted" style="margin-top:-6px;font-size:14px">Они встречаются в диалоге и упражнениях. Нажмите «учить», если хотите вернуть слово в изучение.</p><div class="chips">${kn.map(w=>`<span class="chip"><b>${esc(w.kk)}</b>&nbsp;— ${esc(w.ru)} <button data-unknown="${esc(w.id)}">учить</button></span>`).join('')}</div>`:''}${nextBtn('К грамматике →')}`;
+ sb.querySelectorAll('[data-known]').forEach(b=>b.onclick=()=>{S.known[b.dataset.known]=1;srsAdd(b.dataset.known,3);save();stepWords(l,sb)});
+ sb.querySelectorAll('[data-unknown]').forEach(b=>b.onclick=()=>{delete S.known[b.dataset.unknown];delete S.srs[b.dataset.unknown];save();stepWords(l,sb)});bindNext(l)}
+function stepGram(l,sb){sb.innerHTML=`<div class="gram">${S.gram[l.id]?'<div class="note" style="margin-bottom:18px"><b>Вы это знаете</b>По тесту эта грамматика вам знакома — пробегитесь глазами для повторения.</div>':''}${l.gram}</div>${nextBtn('К практике →')}`;bindNext(l)}
+function stepPractice(l,sb){const nw=shuffle(l.w.filter(w=>!S.known[w.id])),kn=shuffle(l.w.filter(w=>S.known[w.id]));const pool=nw.concat(kn);const items=[];
+ pool.slice(0,6).forEach(w=>items.push(qKkRu(w)));
+ const rev=pool.length>9?pool.slice(6,9):shuffle(pool).slice(0,3);rev.forEach(w=>items.push(qRuKk(w)));
+ l.gx.forEach(g=>items.push(qGram(g,l.id)));
+ // dialogue fill
+ const lines=shuffle(l.dlg.filter(d=>d[1].split(' ').length>=3)).slice(0,2);const allT=[...new Set(l.dlg.flatMap(d=>d[1].split(' ').map(t=>t.replace(/[.,!?…—:]/g,''))).filter(t=>t.length>2))];
+ lines.forEach(d=>{const toks=d[1].split(' ');const cand=toks.map((t,k)=>({t:t.replace(/[.,!?…—:]/g,''),k})).filter(o=>o.t.length>2);if(!cand.length)return;const c=cand[Math.floor(Math.random()*cand.length)];const q=toks.map((t,k)=>k===c.k?t.replace(c.t,'<span class="blank">___</span>'):esc(t)).join(' ');items.push({type:'mc',label:'Диалог: вставьте слово',q:`<span>${esc(d[0])}: ${q}</span><span class="sub">${esc(d[2])}</span>`,opts:[c.t,...shuffle(allT.filter(t=>t!==c.t)).slice(0,2)]})});
+ // listening
+ shuffle(pool.filter(w=>w.kk.length>2)).slice(0,3).forEach(w=>{const same=l.w.filter(x=>x!==w);items.push({type:'mc',label:'Аудирование: что прозвучало?',q:`${say(w.kk,true)}<span class="sub">Нажмите, чтобы прослушать ещё раз</span>`,opts:[w.kk,...distract(w.kk,same,3,'kk')],ex:w.kk+' — '+w.ru,auto:w.kk,wid:w.id})});
+ shuffle(l.dlg.filter(d=>d[1].split(' ').length<=6)).slice(0,1).forEach(d=>{const others=l.dlg.filter(x=>x!==d).map(x=>x[2]);items.push({type:'mc',label:'Аудирование: что значит фраза?',q:`${say(d[1],true)}<span class="sub">Послушайте и выберите перевод</span>`,opts:[d[2],...shuffle(others).slice(0,2)],ex:d[1],auto:d[1]})});
+ // typing
+ shuffle(pool.filter(w=>!w.kk.includes(' ')&&w.kk.length<=11&&w.ru!==w.kk)).slice(0,3).forEach(w=>items.push({type:'type',label:'Напишите по-казахски',q:`${pic(w)}<span class="big" style="font-size:22px">${esc(w.ru)}</span>`,ans:w.kk,wid:w.id}));
+ // build
+ shuffle(l.dlg.filter(d=>{const n=d[1].split(' ').length;return n>=3&&n<=7})).slice(0,2).forEach(d=>{const toks=d[1].replace(/[.,!?…—]/g,'').split(' ').filter(Boolean);items.push({type:'build',label:'Соберите фразу',q:`<span>${esc(d[2])}</span>`,toks,full:d[1]})});
+ sb.innerHTML='<div id="quiz"></div>';
+ runQuiz($('#quiz'),items,(score,res)=>{const pct=Math.round(score/res.length*100);const st=S.les[l.id]||{done:false,best:0};st.best=Math.max(st.best,pct);if(pct>=60)st.done=true;S.les[l.id]=st;
+  if(pct>=60){l.w.forEach(w=>{if(!S.known[w.id])srsAdd(w.id,1)});phrases(l).forEach((p,k)=>srsAdd(l.id+':p:'+k,1))}
+  res.forEach(r=>{if(!r.ok&&r.it.wid&&S.srs[r.it.wid])S.srs[r.it.wid]={b:1,due:Date.now()}});save();
+  const mist=res.filter(r=>!r.ok);const nxt=L.find(x=>x.id===l.id+1);
+  sb.innerHTML=`<section class="res"><div class="lnum">Практика · ${l.kk}</div><div class="row" style="gap:20px;margin:10px 0"><div class="score">${pct}%</div><div><h2>${pct>=85?'Отлично!':pct>=60?'Урок пройден':'Стоит повторить'}</h2><p class="muted" style="margin:4px 0 0">${score} из ${res.length} верно. ${pct>=60?'Слова и фразы урока добавлены в повторение.':'Для зачёта нужно 60%. Перечитайте диалог и грамматику и попробуйте ещё раз.'}</p></div></div>
+  ${mist.length?`<h3 style="font-size:15px;margin-top:14px">Ошибки</h3><ul class="mist">${mist.map(r=>`<li>${r.it.type==='build'?esc(r.it.full):r.it.type==='type'?esc(r.it.q.replace(/<[^>]+>/g,' ').trim())+' → <b>'+esc(r.it.ans)+'</b>':esc(r.it.q.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim())+' → <b>'+esc(r.it.opts[0])+'</b>'}</li>`).join('')}</ul>`:''}
+  <div class="row" style="margin-top:16px"><button class="btn ${pct>=60?'ghost':''}" id="again">Ещё раз</button>${pct>=60&&nxt?`<a class="btn" href="#lesson-${nxt.id}">Следующий урок →</a>`:''}<a class="btn ghost" href="#cards">Карточки</a></div></section>`;
+  $('#again').onclick=()=>stepPractice(l,sb)})}
+
+/* ===================== CARDS ===================== */
+let CF={filter:'all',dir:'kk'};try{const c=JSON.parse(localStorage.getItem('kz-cards-ui'));if(c)CF=Object.assign(CF,c)}catch(e){}
+function saveCF(){try{localStorage.setItem('kz-cards-ui',JSON.stringify(CF))}catch(e){}}
+function deckIds(){return Object.keys(S.srs).filter(id=>cardOf(id)&&(CF.filter==='all'||(CF.filter==='my'&&id.startsWith('c:'))||(CF.filter==='ph'&&cardOf(id).ph)||(CF.filter==='w'&&!cardOf(id).ph&&!id.startsWith('c:'))))}
+function viewCards(extra){const ids=deckIds(),now=Date.now();const due=ids.filter(id=>S.srs[id].due<=now);
+ const learned=ids.filter(id=>S.srs[id].b>=4).length;const my=Object.entries(S.custom||{}).sort((a,b)=>b[1].t-a[1].t);
+ const seg=(key,opts)=>`<div class="seg" role="group">${opts.map(o=>`<button data-${key}="${o[0]}" aria-pressed="${CF[key]===o[0]}">${o[1]}</button>`).join('')}</div>`;
+ app.innerHTML=`<div class="row" style="justify-content:space-between;align-items:flex-end"><div><h1 class="sec" style="margin:0;font-size:26px">Карточки</h1><p class="muted" style="margin:4px 0 0">Знаю — вправо, не знаю — влево. Незнакомые карточки возвращаются в этот же раунд.</p></div></div>
+ <div class="stats" style="margin:18px 0"><div class="stat"><b>${ids.length}</b><span>в колоде</span></div><div class="stat"><b>${due.length}</b><span>ждут повторения</span></div><div class="stat"><b>${ids.filter(id=>S.srs[id].b>0&&S.srs[id].b<4).length}</b><span>в процессе</span></div><div class="stat"><b>${learned}</b><span>выучено (7+ дней)</span></div></div>
+ <div class="row" style="gap:14px;margin-bottom:18px">${seg('filter',[['all','Все'],['w','Слова уроков'],['ph','Фразы'],['my','Мои']])}${seg('dir',[['kk','Казахский → русский'],['ru','Русский → казахский'],['mix','Вперемешку']])}</div>
+ <div id="arena"></div>
+ <div class="cols2" style="margin-top:28px"><form class="addform" id="quickAdd" autocomplete="off" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px"><div class="lnum">Новая карточка</div><label for="qkk">По-казахски</label><input id="qkk" placeholder="слово или фраза" required><div class="kb" id="qkb">${KB.map(c=>`<button type="button" data-c="${c}">${c}</button>`).join('')}</div><label for="qru">Перевод</label><input id="qru" placeholder="перевод на русский" required><div><button class="btn" type="submit">Добавить</button></div><p class="muted" style="font-size:13px;margin:0">Новая карточка сразу попадает в раунд. Слова и фразы из уроков добавляются кнопкой «+».</p></form>
+ <div><div class="lnum">Мои карточки · ${my.length}</div>${my.length?`<div class="mylist">${my.map(([id,c])=>`<div><span><b>${esc(c.kk)}</b> — ${esc(c.ru)}</span><button data-del="${id}" aria-label="Удалить ${esc(c.kk)}">Удалить</button></div>`).join('')}</div>`:'<p class="muted">Здесь появятся слова и фразы, которые вы добавите сами: из жизни, сериалов, вывесок.</p>'}</div></div>`;
+ app.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{CF.filter=b.dataset.filter;saveCF();viewCards()});
+ app.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{CF.dir=b.dataset.dir;saveCF();viewCards()});
+ app.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(b.dataset.ok){delete S.custom[b.dataset.del];delete S.srs[b.dataset.del];save();viewCards()}else{b.dataset.ok=1;b.textContent='Точно удалить?';b.style.color='var(--bad)'}});
+ bindAddForm(()=>viewCards());
+ const arena=$('#arena');
+ if(!ids.length){arena.innerHTML=`<div class="flash"><div class="kind">Колода пуста</div><div class="back">Добавьте своё слово ниже, нажмите «+» у слова или фразы в уроке — или пройдите практику урока: его слова попадут сюда сами.</div><a class="btn" href="#course">К урокам</a></div>`;return}
+ let q=extra?shuffle(ids).slice(0,20):shuffle(due).sort((a,b)=>S.srs[a].b-S.srs[b].b).slice(0,(S.prefs&&+S.prefs.goal)||25);
+ if(!q.length){const nd=Math.min(...ids.map(id=>S.srs[id].due));arena.innerHTML=`<div class="flash"><div class="kind">На сейчас всё</div><div class="front" style="font-size:24px">Жарайсыз!</div><div class="back">Следующие карточки — ${new Date(nd).toLocaleString('ru-RU',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})}.</div><button class="btn ghost" id="more">Повторить 20 случайных</button></div>`;$('#more').onclick=()=>viewCards(true);return}
+ runDeck(arena,q)}
+function runDeck(arena,q){const failed=new Set(),seenOk=new Set();let yes=0,no=0,busy=false;
+ [...new Set(q.map(id=>TXL[akey(cardOf(id).kk)]).filter(x=>x!=null))].forEach(loadAud);
+ const total=q.length;
+ function show(){if(!q.length){done();return}const id=q[0],c=cardOf(id);if(!c){q.shift();show();return}
+  const rev=CF.dir==='ru'||(CF.dir==='mix'&&Math.random()<.5);const audioOk=TXL[akey(c.kk)]!=null||kkVoice;let flipped=false;
+  arena.innerHTML=`<div class="qhead" style="max-width:640px;margin:0 auto 12px"><div class="bar"><span style="width:${(total-q.length)/total*100}%"></span></div><span class="qcount">осталось ${q.length}</span></div>
+  <div class="arena"><div class="pile no"><b>${no}</b>не знаю</div><div class="dcard" id="dc" tabindex="0" aria-label="Карточка. Нажмите, чтобы перевернуть"><span class="stamp n">Не знаю</span><span class="stamp y">Знаю</span><div class="kind">${c.custom?'Моя карточка':c.ph?'Фраза':'Слово'}${S.srs[id].b===0?' · новая':''}${failed.has(id)?' · ещё раз':''}</div>${!c.ph&&!c.custom?pic(c):''}<div class="front">${esc(rev?c.ru:c.kk)}</div>${!rev&&audioOk?say(c.kk):''}<div class="back" id="bk" hidden>${esc(rev?c.kk:c.ru)}${rev&&audioOk?'<div style="margin-top:8px">'+say(c.kk)+'</div>':''}</div><div class="hint" id="hint">Нажмите, чтобы увидеть перевод</div></div><div class="pile yes"><b>${yes}</b>знаю</div></div>
+  <div class="swbtns"><button class="btn no" id="bNo">← Не знаю</button><button class="btn yes" id="bYes">Знаю →</button></div><p class="muted" style="text-align:center;font-size:13px">Свайп или клавиши ← →, пробел — перевернуть</p>`;
+  const dc=$('#dc');
+  const flip=()=>{if(flipped)return;flipped=true;$('#bk').hidden=false;$('#hint').hidden=true;if(rev&&audioOk)play(c.kk)};
+  const decide=ok=>{if(busy)return;busy=true;dc.style.transform=`translateX(${ok?600:-600}px) rotate(${ok?20:-20}deg)`;dc.style.opacity='0';const cur=S.srs[id];
+   if(ok){yes++;const b=failed.has(id)?1:cur.b===0?3:Math.min(cur.b+1,7);S.srs[id]={b,due:Date.now()+INT[b]};q.shift();seenOk.add(id)}
+   else{no++;failed.add(id);S.srs[id]={b:1,due:Date.now()};q.shift();q.splice(Math.min(3,q.length),0,id)}
+   save();setTimeout(()=>{busy=false;show()},220)};
+  dc.onkeydown=e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();flip()}};
+  $('#bNo').onclick=()=>decide(false);$('#bYes').onclick=()=>decide(true);
+  let x0=null,dx=0;
+  dc.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;x0=e.clientX;dx=0;dc.style.transition='none';try{dc.setPointerCapture(e.pointerId)}catch(_){}});
+  dc.addEventListener('pointermove',e=>{if(x0==null)return;dx=e.clientX-x0;dc.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;dc.dataset.dir=dx>50?'r':dx<-50?'l':''});
+  const end=()=>{if(x0==null)return;x0=null;dc.style.transition='';if(dx>100)decide(true);else if(dx<-100)decide(false);else{dc.style.transform='';dc.dataset.dir='';if(Math.abs(dx)<6)flip()}};
+  dc.addEventListener('pointerup',end);dc.addEventListener('pointercancel',end);dc.focus({preventScroll:true})}
+ function done(){const more=deckIds().filter(id=>S.srs[id].due<=Date.now()).length;
+  arena.innerHTML=`<div class="flash"><div class="kind">Раунд завершён</div><div class="front" style="font-size:26px">${seenOk.size} ${plural(seenOk.size,'карточка','карточки','карточек')} повторено</div><div class="back">С первого раза: ${seenOk.size-[...failed].length>0?seenOk.size-[...failed].length:0}. Повторяли в раунде: ${failed.size}. Выученные карточки вернутся через несколько дней, трудные — уже завтра.</div><div class="row" style="justify-content:center">${more?`<button class="btn" id="again">Ещё раунд (${more})</button>`:''}<a class="btn ghost" href="#course">К урокам</a></div></div>`;const a=$('#again');if(a)a.onclick=()=>viewCards()}
+ document.onkeydown=e=>{if(curView()!=='cards'&&curView()!=='review'){document.onkeydown=null;return}if(e.target.closest&&e.target.closest('input'))return;if(e.key==='ArrowRight'){const b=$('#bYes');if(b)b.click()}else if(e.key==='ArrowLeft'){const b=$('#bNo');if(b)b.click()}};
+ show()}
+
+/* ===================== GUIDE ===================== */
+function viewGuide(){const LET=[['Ә ә','Как «э» в слове «этот», широко: әке — отец','әке'],['Ғ ғ','Мягкое гортанное «г», как украинское «г»: ғой'],['Қ қ','Глубокое «к» из горла: қала — город'],['Ң ң','Носовое «нг», как в англ. «sing»: мың — тысяча'],['Ө ө','Как нем. «ö»: «ё» без «й»: өте — очень'],['Ұ ұ','Короткое твёрдое «у»: ұл — сын'],['Ү ү','Как нем. «ü»: «ю» без «й»: үй — дом'],['Һ һ','Выдыхаемое «х», встречается редко: гауһар'],['І і','Очень короткое мягкое «ы/и»: бір — один']];
+ app.innerHTML=`<h1 class="sec" style="margin-top:0;font-size:26px">Справочник</h1>
+ <h2 class="sec" style="font-size:18px">9 особых букв</h2><div class="letters">${LET.map(l=>`<div class="letter"><b>${l[0]}</b><div>${esc(l[1])}</div></div>`).join('')}</div>
+ <p class="muted" style="font-size:14px">Буквы ы и е читаются почти как в русском, у — как «у» или «w» после гласной (ауа — воздух), и — как «ый/ій».</p>
+ <div class="cols2" style="margin-top:10px"><div class="gram"><h3>Сингармонизм</h3><p>Суффиксы подстраиваются под последний гласный слова.</p><div class="tbl"><table><tr><th>Твёрдые</th><th>Мягкие</th></tr><tr><td>а, о, ұ, ы</td><td>ә, е, ө, ү, і</td></tr><tr><td>-лар, -да, -ға, -сыз</td><td>-лер, -де, -ге, -сіз</td></tr></table></div>
+ <h3>Первая согласная суффикса</h3><div class="tbl"><table><tr><th>Слово кончается на</th><th>Суффикс начинается с</th></tr><tr><td>гласный</td><td>мягкий вариант: -ны, -ға, -да, -мын</td></tr><tr><td>з, ж</td><td>звонкий: -дар, -бын, -ба</td></tr><tr><td>к, қ, п, с, т, ш</td><td>глухой: -тар, -пын, -қа, -те</td></tr></table></div></div>
+ <div class="gram"><h3>7 падежей</h3><div class="tbl"><table><tr><th>Падеж</th><th>Вопрос</th><th>Алматы</th><th>мектеп</th></tr>
+ <tr><td>Атау</td><td>кто? что?</td><td>Алматы</td><td>мектеп</td></tr><tr><td>Ілік (род.)</td><td>чей?</td><td>Алматы<b>ның</b></td><td>мектеп<b>тің</b></td></tr>
+ <tr><td>Барыс (дат.)</td><td>куда? кому?</td><td>Алматы<b>ға</b></td><td>мектеп<b>ке</b></td></tr><tr><td>Табыс (вин.)</td><td>кого? что?</td><td>Алматы<b>ны</b></td><td>мектеп<b>ті</b></td></tr>
+ <tr><td>Жатыс (мест.)</td><td>где? когда?</td><td>Алматы<b>да</b></td><td>мектеп<b>те</b></td></tr><tr><td>Шығыс (исх.)</td><td>откуда?</td><td>Алматы<b>дан</b></td><td>мектеп<b>тен</b></td></tr>
+ <tr><td>Көмектес (твор.)</td><td>с чем? чем?</td><td>Алматы<b>мен</b></td><td>мектеп<b>пен</b></td></tr></table></div></div></div>
+ <div class="gram" style="max-width:none"><h3>Порядок слов</h3><p>Глагол — в конце. Определение — перед определяемым. Послелоги — после слова.</p><div class="ex">Мен <b>ертең</b> таңертең <b>Талдықорғанға</b> автобуспен <b>барамын</b>. — Я завтра утром поеду в Талдыкорган на автобусе.</div>
+ <h3>Фразы на каждый день</h3><div class="phr">${GUIDE_PH.map(p=>`<div class="row" style="flex-wrap:nowrap;justify-content:space-between"><div style="min-width:0"><div class="kk">${esc(p[0])}</div><div class="tr">${esc(p[1])}</div></div>${say(p[0])}</div>`).join('')}</div></div>`;loadAud(0)}
+
+/* ===================== ACCOUNTS (standalone site, Firebase + Google) ===================== */
+const FBC=(()=>{const c=window.FIREBASE_CONFIG;return c&&c.apiKey&&!/ВСТАВЬТЕ/.test(c.apiKey)&&window.firebase?c:null})();
+const GICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+const ava=u=>u.photo?`<img src="${esc(u.photo)}" alt="" referrerpolicy="no-referrer">`:`<span class="ava">${esc((u.name||u.email||'?')[0].toUpperCase())}</span>`;
+function renderAcct(){const el=$('#acct');if(!el)return;if(!FBC){el.innerHTML='';return}
+ el.innerHTML=USER?`<a class="acctBtn" href="#account" title="Личный кабинет">${ava(USER)}<span>${esc((S.prefs&&S.prefs.name)||USER.name.split(' ')[0]||'Кабинет')}</span></a>`:`<button class="acctBtn g" id="hdrLogin" aria-label="Войти через Google" title="Войти через Google">${GICON}<span>Войти</span></button>`;
+ const b=$('#hdrLogin');if(b)b.onclick=signIn}
+async function signIn(){const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
+ try{await fauth.signInWithPopup(p)}catch(e){const c=e&&e.code;
+  if(c==='auth/popup-blocked'||c==='auth/operation-not-supported-in-this-environment'||c==='auth/web-storage-unsupported'){try{await fauth.signInWithRedirect(p)}catch(_){toast('Браузер не дал открыть окно входа. Откройте курс в отдельной вкладке и попробуйте ещё раз.')}}
+  else if(c==='auth/unauthorized-domain')toast('Этот домен не разрешён для входа. Добавьте его в Firebase: Authentication → Settings → Authorized domains.');
+  else if(c!=='auth/popup-closed-by-user'&&c!=='auth/cancelled-popup-request')toast('Не удалось войти. Попробуйте ещё раз.')}}
+function mergeInto(a,b){a.known=Object.assign({},b.known,a.known);a.gram=Object.assign({},b.gram,a.gram);a.srs=a.srs||{};for(const[k,v]of Object.entries(b.srs||{}))if(!a.srs[k]||a.srs[k].b<v.b)a.srs[k]=v;a.les=a.les||{};for(const[k,v]of Object.entries(b.les||{})){const x=a.les[k];a.les[k]=x?{done:x.done||v.done,best:Math.max(x.best||0,v.best||0)}:v}a.custom=Object.assign({},b.custom||{},a.custom||{});if(!a.test&&b.test)a.test=b.test}
+function guestPending(){const g=loadLocal(KEY);return USER&&g&&g.upd&&(Object.keys(g.srs||{}).length||Object.keys(g.known||{}).length)&&S.mergedGuest!==g.upd?g:null}
+function initFirebase(){if(!FBC){return}try{firebase.initializeApp(FBC);fauth=firebase.auth();fdb=firebase.firestore()}catch(e){return}
+ setSync('guest');renderAcct();
+ fauth.getRedirectResult().catch(()=>{});
+ fauth.onAuthStateChanged(async u=>{
+  if(u){USER={uid:u.uid,name:u.displayName||'',email:u.email||'',photo:u.photoURL||''};const cached=loadLocal(KEY+':'+u.uid),guest=loadLocal(KEY);
+   try{const snap=await fdb.collection('users').doc(u.uid).get();const d=snap.exists?snap.data():null;
+    if(d&&d.s){const r=JSON.parse(d.s);S=cached&&(cached.upd||0)>(r.upd||0)?cached:r}
+    else{S=cached||(guest&&guest.upd?JSON.parse(JSON.stringify(guest)):fresh());if(guest&&guest.upd&&!cached){S.mergedGuest=guest.upd;try{localStorage.removeItem(KEY)}catch(e){}}}
+    S.prefs=S.prefs||{};if(!S.prefs.name)S.prefs.name=(USER.name||'').split(' ')[0];save();setSync('acct')}
+   catch(e){S=cached||fresh();S.prefs=S.prefs||{};setSync('acct-err')}}
+  else{USER=null;S=loadLocal(KEY)||fresh();setSync('guest')}
+  if(S.prefs&&S.prefs.dir){CF.dir=S.prefs.dir}
+  renderAcct();route()})}
+function viewAccount(){
+ if(!FBC){app.innerHTML=`<section class="panel"><h1 class="sec" style="margin-top:0">Личный кабинет</h1><p>Вход через Google на этой версии курса не настроен. Прогресс хранится в этом браузере.</p><a class="btn" href="#course">К урокам</a></section>`;return}
+ if(!USER){app.innerHTML=`<section class="hero"><div><div class="lnum">Личный кабинет</div><h1 style="margin-top:6px">Войдите, чтобы курс запомнил вас</h1><p>После входа через Google ваш уровень, пройденные уроки и карточки сохраняются в аккаунте. Откройте ту же ссылку на телефоне или другом компьютере — и продолжайте с того же места. У каждого человека свой прогресс.</p><button class="gbtn" id="accLogin">${GICON}Войти через Google</button><p class="muted" style="font-size:13px;margin-top:14px">Мы сохраняем только имя, почту и ваш прогресс в курсе.</p></div><div>${scene(1)}</div></section>`;$('#accLogin').onclick=signIn;return}
+ const P=S.prefs||{};const known=ALLW.filter(w=>S.known[w.id]).length,done=L.filter(l=>S.les[l.id]&&S.les[l.id].done).length;const deck=Object.keys(S.srs).filter(cardOf);const learned=deck.filter(id=>S.srs[id].b>=4).length;const g=guestPending();
+ app.innerHTML=`<section class="panel"><div class="prof">${ava(USER)}<div style="min-width:0"><div class="lnum">Личный кабинет</div><h1 class="sec" style="margin:2px 0 0;font-size:24px">${esc(USER.name||USER.email)}</h1><div class="muted" style="overflow-wrap:anywhere">${esc(USER.email)}</div></div><div style="margin-left:auto"><button class="btn ghost small" id="logout">Выйти</button></div></div>
+ <div class="stats" style="margin-top:18px"><div class="stat"><b>${S.test?esc(S.test.level.split(' ')[0]):'—'}</b><span>уровень</span></div><div class="stat"><b>${known}</b><span>слов из ${ALLW.length} знаете</span></div><div class="stat"><b>${done}/${L.length}</b><span>уроков пройдено</span></div><div class="stat"><b>${learned}/${deck.length}</b><span>карточек выучено</span></div></div></section>
+ ${g?`<div class="banner"><p><b>В этом браузере есть прогресс без входа.</b> Добавить его в ваш аккаунт? Знакомые слова, карточки и уроки объединятся, ничего не потеряется.</p><button class="btn small" id="mergeG">Объединить</button></div>`:''}
+ <h2 class="sec">Настройки</h2><form class="panel" id="prefs"><div class="setgrid">
+ <label for="pName">Как к вам обращаться<input id="pName" value="${esc(P.name||'')}" maxlength="40"></label>
+ <label for="pGoal">Карточек за раунд<select id="pGoal">${[10,15,25,40].map(n=>`<option ${(+P.goal||25)===n?'selected':''}>${n}</option>`).join('')}</select></label>
+ <label for="pDir">Карточки по умолчанию<select id="pDir">${[['kk','Казахский → русский'],['ru','Русский → казахский'],['mix','Вперемешку']].map(o=>`<option value="${o[0]}" ${(P.dir||CF.dir)===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></label>
+ <label for="pRate">Скорость озвучки<select id="pRate">${[['0.8','Медленнее'],['1','Обычная'],['1.15','Быстрее']].map(o=>`<option value="${o[0]}" ${String(P.rate||1)===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select></label>
+ </div><div class="row" style="margin-top:16px"><button class="btn" type="submit">Сохранить</button><button class="btn ghost small" type="button" id="tRate">Проверить скорость</button></div></form>
+ <h2 class="sec">Прогресс</h2><div class="panel row" style="justify-content:space-between"><p style="margin:0;flex:1;min-width:220px">Пройти тест заново, чтобы обновить уровень, или начать курс с чистого листа. Сброс удаляет знакомые слова, уроки и карточки, включая ваши собственные.</p><div class="row"><a class="btn ghost small" href="#test">Пройти тест</a><button class="btn ghost small" id="reset" style="color:var(--bad)">Сбросить прогресс</button></div></div>`;
+ $('#logout').onclick=()=>fauth.signOut();
+ $('#prefs').onsubmit=e=>{e.preventDefault();S.prefs={name:$('#pName').value.trim(),goal:+$('#pGoal').value,dir:$('#pDir').value,rate:+$('#pRate').value};CF.dir=S.prefs.dir;saveCF();save();renderAcct();toast('Настройки сохранены')};
+ $('#tRate').onclick=()=>{const r=S.prefs&&S.prefs.rate;S.prefs=Object.assign({},S.prefs,{rate:+$('#pRate').value});play('Сәлеметсіз бе! Қалыңыз қалай?').then(()=>{S.prefs.rate=r})};
+ const m=$('#mergeG');if(m)m.onclick=()=>{mergeInto(S,g);S.mergedGuest=g.upd;try{localStorage.removeItem(KEY)}catch(e){}save();toast('Прогресс объединён');viewAccount()};
+ const rs=$('#reset');rs.onclick=()=>{if(!rs.dataset.ok){rs.dataset.ok=1;rs.textContent='Точно сбросить? Нажмите ещё раз';return}const pr=S.prefs;S=fresh();S.prefs=pr;save();toast('Прогресс сброшен');location.hash='course'}}
+
+route();initRemote();initFirebase();
+</script>
+
+</body></html>
